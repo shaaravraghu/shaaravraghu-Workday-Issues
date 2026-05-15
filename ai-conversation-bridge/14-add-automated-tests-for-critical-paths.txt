@@ -1,0 +1,33 @@
+Issue Type: Feature Request
+Recommended Visibility: Public issue
+Suggested Title: Add automated tests for webhook handling, response validation, and demo MCP tool behavior
+
+## Problem
+The repo includes `pytest` in `chat-connector/requirements.txt`, but there are no test files for the critical paths. That leaves several subtle regressions unguarded, including signature verification behavior, oversize-message handling, response validation semantics, and demo MCP tool consistency.
+
+## Proposed Solution
+Add a basic automated test suite that covers:
+- webhook signature pass/fail behavior
+- missing-config behavior in the callback route
+- `ResponseValidator` fallback/hedging handling
+- `request_my_time_off` semantics
+- schema consistency for demo MCP tools such as `get_direct_reports`
+
+## Component
+- [x] Chat Connector (new platform, adapter improvement)
+- [ ] Flowise Flow (new flow template, node configuration)
+- [x] Demo MCP Server (new tool, mock data)
+- [ ] Documentation
+- [ ] Other
+
+## Alternatives Considered
+- Keep relying on manual cloud verification only
+- Add smoke tests in CI without deeper unit coverage
+
+## Additional Context
+Evidence
+- [chat-connector/requirements.txt](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/requirements.txt:6)
+- [CONTRIBUTING.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/CONTRIBUTING.md:56)
+
+No `test_*.py` or `*_test.py` files were found during repository review.
+
