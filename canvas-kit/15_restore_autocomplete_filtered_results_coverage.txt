@@ -1,0 +1,18 @@
+Suggested Title: Restore skipped Cypress coverage for Autocomplete filtered results after selection
+Suggested Template: chore
+Suggested Labels: chore
+
+## 🧹 Chore
+
+Re-enable or replace the skipped filtered-results assertion in `cypress/component/Autocomplete.spec.tsx`.
+
+Current skipped test:
+- `it.skip('should change the filtered results', ...)`
+
+The scenario covers a realistic keyboard flow:
+1. user types to filter
+2. presses Enter to select an option
+3. types an additional character
+4. expects the listbox results to narrow accordingly
+
+That flow is central to autocomplete correctness, so leaving the assertion skipped reduces coverage for a behavior users are likely to rely on.
