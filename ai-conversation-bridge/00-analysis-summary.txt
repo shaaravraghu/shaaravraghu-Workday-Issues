@@ -1,0 +1,29 @@
+AI Conversation Bridge issue analysis summary
+
+Scope reviewed
+- README, CONTRIBUTING, SECURITY, pyproject, docker-compose, scripts
+- chat-connector Flask app and provider/service modules
+- mcp-demo-server tools and mock data
+- Flowise README and exported flow JSON
+- GitHub issue/PR templates
+- i18n documentation stubs
+
+Checks performed
+- `python3 -m compileall chat-connector mcp-demo-server` completed successfully.
+- `docker compose build` could not be fully verified in this environment because the local Docker daemon was unavailable.
+- No automated test files were found even though `pytest` is listed in `chat-connector/requirements.txt`.
+
+Recommended filing order
+1. Private security report: optional webhook signature verification (`01-private-require-signed-webhooks.txt`)
+2. Public bug: redact user identifiers from logs (`02-redact-user-identifiers-from-logs.txt`)
+3. Public bug: validate config before sending the oversize-message reply (`03-validate-lineworks-config-before-oversize-reply-path.txt`)
+4. Public bug: response validator currently logs hedging but still passes risky answers through (`05-make-response-validator-fail-closed-on-hedging.txt`)
+5. Public bug: submitted time-off requests are not persisted into demo history (`06-persist-submitted-time-off-requests-in-demo-history.txt`)
+6. Public bug: time-off requests accept invalid dates and ignore entitlements (`07-validate-time-off-dates-and-entitlements.txt`)
+7. Public docs bug: Secret Manager deploy example uses the wrong source path (`11-fix-secret-manager-doc-example-source-path.txt`)
+8. Remaining bugs and enhancements after the above
+
+Visibility guidance
+- Route `01-private-require-signed-webhooks.txt` through GitHub private vulnerability reporting per `SECURITY.md`.
+- The remaining drafts are suitable for normal public issues unless you decide to consolidate related items.
+
