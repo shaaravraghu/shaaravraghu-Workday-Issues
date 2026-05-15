@@ -1,0 +1,67 @@
+Issue Draft Files
+
+01_contributing-guide_issue_workflow.txt
+Suggestion to add repo-local issue communication guidance to `CONTRIBUTING.md`.
+
+02_suggestion_template_grammar.txt
+Chore to fix grammar in the suggestion issue template.
+
+03_bug_template_triage_fields.txt
+Feature proposal to add better bug triage fields.
+
+04_mcp_harness_dark_mode.txt
+Feature proposal to restore dark mode support in the MCP story harness.
+
+05_virtual_list_item_height_update.txt
+Bug report draft for disabled virtual list height updates.
+
+06_slash_import_codemod_namespace_bundle.txt
+Bug report draft for unsupported namespace bundle imports in the v5 codemod.
+
+07_doc_parser_generics_external_symbols.txt
+Bug report draft for doc parser generic external symbol lookup.
+
+08_dependency_check_ignore_rules.txt
+Chore to explain or remove depcheck ignore exceptions.
+
+09_tokens_placeholder_links.txt
+Chore to replace placeholder migration links in token docs.
+
+10_formfieldgroup_docs_typos.txt
+Chore to fix FormFieldGroup doc typos and outdated wording.
+
+11_extractprops_model_tests.txt
+Chore to add missing type-test coverage for model-based ExtractProps.
+
+12_remove_stale_version_comments.txt
+Chore to remove stale version comments tied to old major releases.
+
+13_restore_menu_typeahead_focus_coverage.txt
+Chore to restore skipped Cypress coverage for Menu printable-character focus behavior.
+
+14_restore_modal_iframe_focus_trap_coverage.txt
+Chore to restore skipped Modal iframe focus-trap coverage.
+
+15_restore_autocomplete_filtered_results_coverage.txt
+Chore to restore skipped Cypress coverage for Autocomplete filtered results after selection.
+
+16_fix_overflow_actionbar_ci_flake.txt
+Chore to investigate CI-only failures and re-enable the OverflowActionBar suite.
+
+17_parse_spec_file_skip_metadata.txt
+Feature proposal to preserve skip and only metadata in generated Cypress specifications.
+
+18_remove_popupstack_legacy_container_fallback.txt
+Chore to remove or document the stale PopupStack container fallback.
+
+19_status_indicator_variant_contract_mismatch.txt
+Bug report for inconsistent StatusIndicator variant types, docs, and implementation.
+
+20_status_indicator_high_emphasis_deprecation.txt
+Chore to stop promoting deprecated high emphasis in StatusIndicator docs and visual tests.
+
+21_create_stencil_modifiers_requirement.txt
+Bug report for the empty `modifiers: {}` requirement when extending stencils.
+
+22_audit_global_cypress_axe_suppressions.txt
+Suggestion to audit and narrow globally disabled axe rules in Cypress component tests.
