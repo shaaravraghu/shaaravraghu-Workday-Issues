@@ -1,0 +1,30 @@
+Issue Type: Feature Request
+Recommended Visibility: Public issue
+Suggested Title: Remove the RSS news tool from the Workday flow template or move it to a separate demo flow
+
+## Problem
+The Workday agent prompt says the assistant should politely decline non-Workday topics, but the exported flow includes a generic RSS news tool. That creates a contradiction between the system prompt and the available tool surface, and it unnecessarily broadens the behavior of what is meant to be a Workday-focused assistant.
+
+## Proposed Solution
+Remove the RSS news tool from `workday-mcp-agent.json`, or move it into a separate "tool demo" flow that is not marketed as the canonical Workday assistant template.
+
+## Component
+- [ ] Chat Connector (new platform, adapter improvement)
+- [x] Flowise Flow (new flow template, node configuration)
+- [ ] Demo MCP Server (new tool, mock data)
+- [x] Documentation
+- [ ] Other
+
+## Alternatives Considered
+- Keep the RSS tool but disable it by default and document why it exists
+- Keep it only in a sandbox/demo branch rather than the main Workday template
+
+## Additional Context
+Evidence
+- [flowise/README.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/flowise/README.md:41)
+- [flowise/flows/workday-mcp-agent.json](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/flowise/flows/workday-mcp-agent.json:713)
+
+Specific mismatch
+- The system prompt says to decline weather/sports/non-Workday topics
+- The tool list still exposes `get_rss_news`
+
