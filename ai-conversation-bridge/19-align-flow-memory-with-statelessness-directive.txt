@@ -1,0 +1,49 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Align Flowise memory settings with the agent prompt’s `STATELESSNESS` directive
+
+## Description
+The exported Workday flow tells the assistant to treat every request as new and not assume context from previous turns, but the same flow enables conversation memory with a window size of 20 messages. That is internally inconsistent and can produce behavior the system prompt explicitly says to avoid.
+
+## Component
+- [ ] Chat Connector
+- [x] Flowise Flow
+- [ ] Demo MCP Server
+- [x] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Inspect the system prompt in `flowise/flows/workday-mcp-agent.json`.
+2. Inspect the memory settings in the same file.
+3. Observe that the prompt says `STATELESSNESS`, while `agentEnableMemory=true` and the memory type is `windowSize` with `20`.
+
+## Expected Behavior
+The flow should either:
+- disable memory to match the prompt, or
+- change the prompt/docs to describe the intended conversational memory behavior accurately.
+
+## Actual Behavior
+The prompt and configuration encode contradictory behaviors.
+
+## Environment
+- OS: Any
+- Python version: N/A
+- Docker version: N/A
+- Chat platform: N/A
+- Flowise version: Any compatible version
+
+## Logs
+```text
+Relevant files:
+- flowise/flows/workday-mcp-agent.json:545-555
+- flowise/flows/workday-mcp-agent.json:709-710
+- flowise/flows/workday-mcp-agent.json:739-760
+- flowise/README.md:36-39
+```
+
+## Additional Context
+Evidence
+- [flowise/flows/workday-mcp-agent.json](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/flowise/flows/workday-mcp-agent.json:545)
+- [flowise/flows/workday-mcp-agent.json](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/flowise/flows/workday-mcp-agent.json:709)
+- [flowise/README.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/flowise/README.md:36)
+
