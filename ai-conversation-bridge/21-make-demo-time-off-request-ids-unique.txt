@@ -1,0 +1,46 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Make demo time-off request IDs unique across repeated submissions
+
+## Description
+`request_my_time_off()` builds request IDs using only `CURRENT_USER_WORKER_ID` and `start_date`. If the same worker submits multiple requests with the same start date, the generated IDs collide.
+
+## Component
+- [ ] Chat Connector
+- [ ] Flowise Flow
+- [x] Demo MCP Server
+- [ ] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Call `request_my_time_off(start_date="2026-06-01", end_date="2026-06-02", time_off_type="vacation")`.
+2. Call it again with the same `start_date` for the same current worker.
+3. Observe that both responses return the same `request_id`.
+
+## Expected Behavior
+Each submitted request should have a unique identifier.
+
+## Actual Behavior
+The request ID format is `TOR-{CURRENT_USER_WORKER_ID}-{start_date}`, which collides for repeated submissions.
+
+## Environment
+- OS: Any
+- Python version: Source analysis
+- Docker version: N/A
+- Chat platform: Any
+- Flowise version: Any
+
+## Logs
+```text
+Relevant code path:
+- mcp-demo-server/main.py:206-209
+```
+
+## Additional Context
+Evidence
+- [mcp-demo-server/main.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/mcp-demo-server/main.py:206)
+
+Suggested fix
+- Append a counter, timestamp, or UUID suffix
+- If write persistence is later added, ensure uniqueness is checked against existing requests
+
