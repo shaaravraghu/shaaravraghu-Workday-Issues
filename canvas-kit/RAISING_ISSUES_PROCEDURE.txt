@@ -1,0 +1,50 @@
+Procedure To Raise These Issues
+
+1. Review the repo expectations first.
+Read `CODE_OF_CONDUCT.md` and be prepared to follow the Canvas community standards. If you later contribute code, also be ready to accept the Contributor License Agreement requirements mentioned in the contribution guidance.
+
+2. Start with duplicate checking.
+Before opening any issue, search the GitHub issue tracker using the draft title, a few keywords, and related paths such as `FormFieldGroup`, `slashImports`, `docParser`, or `focusRing`.
+
+3. Pick the correct issue template.
+Use the template that matches each draft:
+- `bug` for runtime, tooling, parsing, or behavior failures
+- `feature` for improvements like better template fields or dark mode support
+- `suggestion` for process or documentation improvements
+- `chore` for cleanup, docs fixes, and maintenance work
+
+4. Open the matching draft file.
+Each `.txt` file in `issue-drafts/` already includes:
+- a suggested title
+- the recommended GitHub template
+- the expected label
+- the template sections with content filled in
+
+5. Validate the draft before posting.
+For each issue:
+- confirm the file path still exists
+- check that the wording matches the current branch state
+- add screenshots, command output, or a minimal reproduction if you can gather one
+- soften any claim that is based only on code inspection by saying it is from a repo audit
+
+6. Raise the issue in GitHub.
+Go to the Canvas Kit issue chooser and select the matching template. Paste the draft content from the `.txt` file into the GitHub form and keep the suggested title unless you find a clearer duplicate-safe version.
+
+7. Communicate on the issue after posting.
+Follow the contribution guidance:
+- ask whether the issue is still relevant
+- ask whether maintainers want attention on it now
+- comment if you want to work on it
+- ask questions early if details are unclear
+
+8. Use `good first issue` guidance when relevant.
+If you are new to the repo, check whether a similar issue already exists with `good first issue`. If one of these drafts overlaps with an existing beginner-friendly item, prefer contributing there rather than opening a duplicate.
+
+9. Treat UI and visual issues carefully.
+If you raise or later work on a visual/UI issue, consult a designer or ask a maintainer for help so the change can be reviewed as an end-to-end experience.
+
+10. Keep follow-up practical.
+If maintainers confirm the issue is useful, reply with:
+- whether you want to investigate or implement it
+- any questions you have
+- a link to a reproduction branch or PR when available
