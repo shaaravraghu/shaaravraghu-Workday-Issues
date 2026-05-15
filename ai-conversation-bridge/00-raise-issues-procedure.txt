@@ -1,0 +1,32 @@
+Procedure for raising these issues
+
+1. Start with `issue-drafts/00-analysis-summary.txt` and decide whether you want to file the drafts one-by-one or merge a few closely related ones.
+2. Open `SECURITY.md` first. Any draft marked "Recommended Visibility: Private vulnerability report" should not be posted as a public GitHub issue.
+3. For the private security draft:
+- Go to the repository Security tab.
+- Click `Report a vulnerability`.
+- Copy the contents of `01-private-require-signed-webhooks.txt`.
+4. For public bug drafts:
+- Open `New issue`.
+- Choose `Bug Report`.
+- Copy the matching `.txt` file into the template.
+- Keep the suggested title unless you want a shorter version.
+5. For public feature/enhancement drafts:
+- Open `New issue`.
+- Choose `Feature Request`.
+- Copy the matching `.txt` file into the template.
+6. Before submitting, do a quick duplicate check using the title keywords from the draft.
+7. If you want to reduce issue volume, consider merging these pairs:
+- `06-persist-submitted-time-off-requests-in-demo-history.txt` and `07-validate-time-off-dates-and-entitlements.txt`
+- `11-fix-secret-manager-doc-example-source-path.txt` and `12-fix-pr-template-license-link.txt`
+- `13-publish-or-hide-incomplete-translated-setup-guides.txt` and `14-add-automated-tests-for-critical-paths.txt` only if maintainers prefer a broader project-quality meta issue
+8. Suggested order:
+- File the private security report first
+- Then file the highest-signal public bugs
+- Then file the docs and enhancement issues
+9. Keep screenshots or command output optional. Most of these drafts are source-analysis based and already include file references.
+
+Notes
+- The repo’s public templates are in `.github/ISSUE_TEMPLATE/`.
+- The PR template currently references `LICENSE.md`, but the repository file is named `LICENSE`. That mismatch already has its own draft (`12-fix-pr-template-license-link.txt`).
+
