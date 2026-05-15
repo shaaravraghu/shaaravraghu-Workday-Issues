@@ -1,0 +1,19 @@
+Suggested Title: Investigate CI-only failure and re-enable OverflowActionBar Cypress suite
+Suggested Template: chore
+Suggested Labels: chore
+
+## 🧹 Chore
+
+Investigate the CI-only instability in `cypress/component/ActionBar.spec.tsx` and re-enable the skipped `OverflowActionBar` suite.
+
+The file currently says:
+- `// Skipped for now as this keeps failing in CI but passes in local`
+- `describe.skip('OverflowActionBar Example', ...)`
+
+This suite covers important responsive and keyboard behaviors such as:
+- overflow button visibility
+- aria-expanded and aria-haspopup state
+- focus movement to the "More actions" button
+- overflow menu rendering at narrower widths
+
+Because the entire suite is skipped, regressions in overflow behavior may go undetected until manual review.
