@@ -1,0 +1,26 @@
+Suggested Title: Preserve skip and only metadata when generating Cypress specifications
+Suggested Template: feature
+Suggested Labels: feature
+
+## 🚀 Feature Proposal
+
+Update `modules/docs/utils/parseSpecFile.ts` so generated specification output can distinguish normal tests from `skip` and `only` variants instead of silently dropping that state.
+
+## Motivation
+
+The current parser builds a tree of `describe` and `it` blocks by evaluating the transpiled file contents, but it currently assigns:
+- `describe.skip = noop`
+- `describe.only = noop`
+- `it.skip = noop`
+- `it.only = noop`
+
+That means skipped or isolated tests are not represented in the generated structure, which can make documentation or downstream tooling look more complete than the actual test suite.
+
+## Example
+
+Extend the parsed block format to include a status field such as:
+- `normal`
+- `skip`
+- `only`
+
+Then keep those entries in the output so generated documentation can more accurately reflect the real Cypress suite state.
