@@ -1,0 +1,30 @@
+Issue Type: Feature Request
+Recommended Visibility: Public issue
+Suggested Title: Add correlation IDs and structured logging across the chat connector request path
+
+## Problem
+When a user reports that the bot did not respond, it is hard to trace a single request across webhook receipt, AI provider call, and LINE WORKS reply delivery. The enterprise hardening guide already recommends correlation IDs and structured logging, but the current implementation still uses plain text logs without a request identifier.
+
+## Proposed Solution
+Generate a request ID at `/callback` entry, attach it to all log records, and propagate it through outbound provider calls and LINE WORKS delivery calls.
+
+## Component
+- [x] Chat Connector (new platform, adapter improvement)
+- [ ] Flowise Flow (new flow template, node configuration)
+- [ ] Demo MCP Server (new tool, mock data)
+- [x] Documentation
+- [ ] Other
+
+## Alternatives Considered
+- Rely only on timestamp + user ID correlation
+- Add external tracing later without updating application logs
+
+## Additional Context
+Evidence
+- [docs/enterprise-guide.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/docs/enterprise-guide.md:59)
+- [chat-connector/app/routes.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/routes.py:56)
+- [chat-connector/app/services/flowise.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/services/flowise.py:47)
+- [chat-connector/app/services/openrouter.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/services/openrouter.py:79)
+
+This would also make future PII redaction easier if the app switches to structured JSON logs.
+
