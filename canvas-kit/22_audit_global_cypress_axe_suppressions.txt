@@ -1,0 +1,25 @@
+Suggested Title: Audit and narrow the globally disabled axe rules in Cypress component tests
+Suggested Template: suggestion
+Suggested Labels: suggestion
+
+## 💡 Suggestion
+
+Review the global `cy.configureAxe` configuration in `cypress/support/component.ts` and reduce the set of accessibility rules that are disabled for every component test by default.
+
+## Motivation
+
+The current setup disables these rules globally:
+- `landmark-one-main`
+- `page-has-heading-one`
+- `region`
+- `bypass`
+- `html-has-lang`
+
+Some of those suppressions may be reasonable for isolated story rendering, but applying them at the global test harness level can also hide accessibility regressions that would otherwise be caught early. The `region` rule is especially notable because multiple component specs still assert `role="region"` behavior while the a11y scanner is globally configured not to enforce that rule.
+
+## Example
+
+Possible improvements:
+- keep only the rules that are truly incompatible with story-based test mounting
+- move some suppressions into per-spec overrides instead of the global harness
+- document why each remaining suppression is necessary
