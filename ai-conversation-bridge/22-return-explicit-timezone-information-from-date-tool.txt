@@ -1,0 +1,49 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Return explicit timezone/offset information from `get_today_date_and_day_of_week`
+
+## Description
+`get_today_date_and_day_of_week()` returns a naive local date/time and hardcodes `"timezone": "server_local"`. In a cross-region APJ-oriented demo, that is ambiguous and makes it difficult for flows to reason about exact dates, offsets, and locale-sensitive time-off requests.
+
+## Component
+- [ ] Chat Connector
+- [ ] Flowise Flow
+- [x] Demo MCP Server
+- [ ] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Call `get_today_date_and_day_of_week()`.
+2. Inspect the returned payload.
+3. Observe that the response includes local clock time but not an actual timezone name or UTC offset.
+
+## Expected Behavior
+The tool should return explicit machine-readable time context, such as:
+- ISO 8601 datetime
+- UTC offset
+- IANA timezone when available
+
+## Actual Behavior
+The response uses `datetime.now()` and the placeholder string `"server_local"`.
+
+## Environment
+- OS: Any
+- Python version: Source analysis
+- Docker version: N/A
+- Chat platform: Any
+- Flowise version: Any
+
+## Logs
+```text
+Relevant code path:
+- mcp-demo-server/main.py:38-47
+```
+
+## Additional Context
+Evidence
+- [mcp-demo-server/main.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/mcp-demo-server/main.py:38)
+
+Suggested fix
+- Return an ISO 8601 timestamp with offset
+- Include a separate `timezone` or `utc_offset` field derived from the actual runtime zone
+
