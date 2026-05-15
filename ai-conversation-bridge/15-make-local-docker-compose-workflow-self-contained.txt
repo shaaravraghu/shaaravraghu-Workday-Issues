@@ -1,0 +1,54 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Make the documented local `docker compose` workflow self-contained or change the default provider
+
+## Description
+The documented local workflow is not runnable out of the box. `scripts/setup.sh` copies `chat-connector/.env.example`, which defaults `CHAT_PROVIDER=flowise`, but the local `docker-compose.yml` stack does not include a Flowise service and the example leaves `FLOWISE_API_URL` blank. That means the advertised local smoke-test flow starts a chat connector that is misconfigured by default.
+
+## Component
+- [x] Chat Connector
+- [ ] Flowise Flow
+- [x] Documentation
+- [ ] Demo MCP Server
+- [ ] Other
+
+## Steps to Reproduce
+1. Run `./scripts/setup.sh`.
+2. Start the local stack with `docker compose up --build`.
+3. Inspect the generated `chat-connector/.env`.
+4. Observe that the connector defaults to `CHAT_PROVIDER=flowise` with no `FLOWISE_API_URL`, while the local compose stack only includes `chat-connector` and `mcp-demo-server`.
+
+## Expected Behavior
+The default local path should be self-contained, or the docs/scripts should clearly switch the sample configuration to a runnable local mode.
+
+## Actual Behavior
+The generated local env config points to a missing Flowise dependency.
+
+## Environment
+- OS: Any
+- Python version: N/A
+- Docker version: N/A
+- Chat platform: LINE WORKS
+- Flowise version: N/A
+
+## Logs
+```text
+Relevant files:
+- scripts/setup.sh:19-37
+- chat-connector/.env.example:1-15
+- docker-compose.yml:5-24
+- CONTRIBUTING.md:36-44
+```
+
+## Additional Context
+Evidence
+- [scripts/setup.sh](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/scripts/setup.sh:19)
+- [chat-connector/.env.example](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/.env.example:1)
+- [docker-compose.yml](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/docker-compose.yml:5)
+- [CONTRIBUTING.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/CONTRIBUTING.md:36)
+
+Suggested fix
+- Default local smoke testing to `CHAT_PROVIDER=openrouter`, or
+- add Flowise to the local stack, or
+- make the docs/scripts explicitly instruct the user to set `FLOWISE_API_URL` before the first run
+
