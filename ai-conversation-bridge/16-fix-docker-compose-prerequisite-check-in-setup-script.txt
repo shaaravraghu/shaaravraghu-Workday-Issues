@@ -1,0 +1,46 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Fix `scripts/setup.sh` Docker Compose prerequisite check
+
+## Description
+`scripts/setup.sh` checks Docker Compose availability with `command -v docker compose`, which treats `compose` like a standalone command name. On standard Docker installations, `docker compose` is commonly a Docker subcommand/plugin rather than a separate executable named `compose`, so this check is brittle and can fail even when `docker compose` works.
+
+## Component
+- [ ] Chat Connector
+- [ ] Flowise Flow
+- [ ] Demo MCP Server
+- [x] Documentation
+- [x] Other
+
+## Steps to Reproduce
+1. Inspect the prerequisite check in `scripts/setup.sh`.
+2. Compare it with how Docker Compose is typically invoked as `docker compose ...`.
+3. Observe that the script is checking for `compose` as if it were its own command.
+
+## Expected Behavior
+The setup script should verify Docker Compose with a command that matches actual usage, such as `docker compose version`.
+
+## Actual Behavior
+The script uses `command -v docker compose`, which is not a reliable test for the Docker Compose plugin/subcommand.
+
+## Environment
+- OS: Any
+- Python version: N/A
+- Docker version: Any recent Docker with Compose plugin
+- Chat platform: N/A
+- Flowise version: N/A
+
+## Logs
+```text
+Relevant file:
+- scripts/setup.sh:12-15
+```
+
+## Additional Context
+Evidence
+- [scripts/setup.sh](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/scripts/setup.sh:12)
+
+Suggested fix
+- Replace the check with something like `docker compose version >/dev/null 2>&1`
+- Or probe `docker compose ls` / `docker compose config` instead
+
