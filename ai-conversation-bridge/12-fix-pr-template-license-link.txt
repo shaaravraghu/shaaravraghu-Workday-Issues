@@ -1,0 +1,43 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Fix the PR template checklist entry that references `LICENSE.md`
+
+## Description
+The PR template asks contributors to confirm usage "under the terms of the `LICENSE.md` file", but the repository file is named `LICENSE`. This is a small docs/UX bug, but it creates avoidable confusion in the contributor workflow.
+
+## Component
+- [ ] Chat Connector
+- [ ] Flowise Flow
+- [ ] Demo MCP Server
+- [x] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Open `.github/PULL_REQUEST_TEMPLATE.md`.
+2. Read the final checklist item.
+3. Compare it with the actual repository contents.
+
+## Expected Behavior
+The template should reference the correct file name (`LICENSE`) or use wording that does not depend on a file extension.
+
+## Actual Behavior
+The template references `LICENSE.md`, which does not exist in the repo.
+
+## Environment
+- OS: Any
+- Python version: N/A
+- Docker version: N/A
+- Chat platform: N/A
+- Flowise version: N/A
+
+## Logs
+```text
+Relevant file:
+- .github/PULL_REQUEST_TEMPLATE.md:26
+```
+
+## Additional Context
+Evidence
+- [.github/PULL_REQUEST_TEMPLATE.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/.github/PULL_REQUEST_TEMPLATE.md:26)
+- [LICENSE](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/LICENSE:1)
+
