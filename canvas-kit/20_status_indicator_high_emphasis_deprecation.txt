@@ -1,0 +1,15 @@
+Suggested Title: Stop promoting deprecated high emphasis in StatusIndicator docs and visual tests
+Suggested Template: chore
+Suggested Labels: chore
+
+## 🧹 Chore
+
+Update the Preview `StatusIndicator` docs and visual testing stories so they no longer present `emphasis="high"` as a normal usage pattern while the implementation marks it as deprecated.
+
+Relevant files:
+- `modules/preview-react/status-indicator/lib/StatusIndicator.tsx`
+- `modules/preview-react/status-indicator/stories/StatusIndicator.mdx`
+- `modules/preview-react/status-indicator/stories/visual-testing/testing.stories.tsx`
+- `modules/preview-react/status-indicator/stories/examples/Variants.tsx`
+
+The implementation says high emphasis "is being deprecated and will be removed in a future release," but current docs still say "`emphasis` accepts `high` or `low`" and the visual test matrix still renders "High Emphasis" states. That mixed guidance can encourage new usage of a value that the component is already trying to retire.
