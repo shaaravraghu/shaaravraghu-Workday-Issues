@@ -1,0 +1,32 @@
+Issue Type: Feature Request
+Recommended Visibility: Public issue
+Suggested Title: Expose the existing `pay_slips.json` mock data through a demo MCP tool
+
+## Problem
+The repository already includes `mcp-demo-server/mock_data/pay_slips.json`, but no MCP tool exposes that data. That leaves a finance-oriented dataset unused, even though the project positions itself as an HR/Finance assistant.
+
+## Proposed Solution
+Add one or more demo tools such as:
+- `get_current_user_pay_slips`
+- `get_pay_slip_by_period`
+- `get_current_user_latest_pay_slip`
+
+## Component
+- [ ] Chat Connector (new platform, adapter improvement)
+- [ ] Flowise Flow (new flow template, node configuration)
+- [x] Demo MCP Server (new tool, mock data)
+- [ ] Documentation
+- [ ] Other
+
+## Alternatives Considered
+- Remove `pay_slips.json` if payroll is intentionally out of scope for the demo
+- Keep the file but document that it is reserved for future expansion
+
+## Additional Context
+Evidence
+- [README.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/README.md:117)
+- [mcp-demo-server/mock_data/pay_slips.json](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/mcp-demo-server/mock_data/pay_slips.json:1)
+- [mcp-demo-server/main.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/mcp-demo-server/main.py:1)
+
+This would make the demo more compelling without needing new sample data.
+
