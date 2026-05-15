@@ -1,0 +1,50 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Normalize `get_direct_reports` empty-result shape instead of returning a list with a message object
+
+## Description
+`get_direct_reports()` is annotated as `list[dict]`, but its no-results case returns `[{"message": "..."}]` instead of either an empty list or a structured error object. This makes the schema inconsistent and forces Flowise or downstream consumers to special-case a pseudo-record that is not actually a direct report.
+
+## Component
+- [ ] Chat Connector
+- [ ] Flowise Flow
+- [x] Demo MCP Server
+- [ ] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Call `get_direct_reports()` with the default `CURRENT_USER_WORKER_ID=WK001`.
+2. Observe that no workers report to `WK001` in the mock data.
+3. The tool returns `[{"message": "No direct reports found for WK001"}]`.
+
+## Expected Behavior
+Return one of the following consistently:
+- `[]`
+- `{"reports": []}`
+- `{"error": "..."}`
+
+## Actual Behavior
+A list of pseudo-report objects is returned.
+
+## Environment
+- OS: Any
+- Python version: Source analysis
+- Docker version: N/A
+- Chat platform: Any
+- Flowise version: Any
+
+## Logs
+```text
+Relevant code paths:
+- mcp-demo-server/main.py:123-139
+```
+
+## Additional Context
+Other tools in the same server usually use `{"error": ...}` for not-found cases, so this one stands out.
+
+Evidence
+- [mcp-demo-server/main.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/mcp-demo-server/main.py:123)
+
+Suggested fix
+- Return a consistent empty container or structured error
+- Document the chosen schema in the README so Flowise authors know what to expect
