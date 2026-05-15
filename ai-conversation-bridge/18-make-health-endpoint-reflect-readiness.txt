@@ -1,0 +1,51 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Make `/` health reporting reflect readiness instead of always returning `status: ok`
+
+## Description
+The current health endpoint always returns `200` with `{"status": "ok", "provider": ...}`. It does not reflect missing LINE WORKS credentials, missing Flowise/OpenRouter configuration, or invalid provider state. That makes it a liveness check at best, but it is named and used like a health endpoint.
+
+## Component
+- [x] Chat Connector
+- [ ] Flowise Flow
+- [ ] Demo MCP Server
+- [ ] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Start the app with missing `FLOWISE_API_URL`, missing LINE WORKS credentials, or an invalid `CHAT_PROVIDER`.
+2. Call `/`.
+3. Observe that the endpoint still returns `200` and `status: ok`.
+
+## Expected Behavior
+The service should expose a readiness signal that reflects configuration validity and basic dependency readiness.
+
+## Actual Behavior
+The endpoint only returns static process-level information.
+
+## Environment
+- OS: Any
+- Python version: Source analysis
+- Docker version: N/A
+- Chat platform: Any
+- Flowise version: Any
+
+## Logs
+```text
+Relevant code paths:
+- chat-connector/app/routes.py:34-37
+- chat-connector/app/config.py:16-37
+- chat-connector/app/services/lineworks.py:48-55
+- chat-connector/app/services/flowise.py:17-20
+```
+
+## Additional Context
+Evidence
+- [chat-connector/app/routes.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/routes.py:34)
+- [chat-connector/app/services/lineworks.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/services/lineworks.py:48)
+- [chat-connector/app/services/flowise.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/services/flowise.py:17)
+
+Suggested fix
+- Split liveness and readiness endpoints
+- Fail readiness when required env vars are missing or provider selection is invalid
+
