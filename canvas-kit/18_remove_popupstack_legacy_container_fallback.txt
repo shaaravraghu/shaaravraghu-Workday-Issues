@@ -1,0 +1,16 @@
+Suggested Title: Remove or document the stale PopupStack container fallback kept for pre-v13 compatibility
+Suggested Template: chore
+Suggested Labels: chore
+
+## 🧹 Chore
+
+Revisit the temporary `getContainer` fallback in `modules/popup-stack/lib/PopupStack.ts`.
+
+The file currently includes this note:
+- `TODO: Remove this after v12 and use stack.container(el) directly.`
+
+The fallback changes the stack container when `stack.container?.()` returns `document.body`, then switches to `element?.ownerDocument.body`. Since the repo is already on v15, this compatibility path now reads as stale technical debt.
+
+This should either be:
+- removed if older-version interop no longer requires it, or
+- documented with a current explanation if it is still necessary for multi-version or fullscreen compatibility
