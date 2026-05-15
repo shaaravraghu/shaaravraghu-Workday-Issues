@@ -1,0 +1,48 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Bound or expire `OpenRouterClient.chat_history` across distinct users
+
+## Description
+`OpenRouterClient` limits messages per user, but it does not limit the number of user IDs it stores. In a long-running process, `self.chat_history` can grow without bound as new users appear. This is especially risky on a public webhook endpoint because a single worker can accumulate arbitrary per-user state over time.
+
+## Component
+- [x] Chat Connector
+- [ ] Flowise Flow
+- [ ] Demo MCP Server
+- [ ] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Run the chat connector with `CHAT_PROVIDER=openrouter`.
+2. Send messages from a large number of distinct `user_id` values.
+3. Observe that `chat_history` keeps a new top-level entry for each user and never evicts old sessions.
+
+## Expected Behavior
+Conversation history should have a bounded memory footprint via TTL, LRU eviction, or an external shared store.
+
+## Actual Behavior
+Only the per-user message list is trimmed; the global dict grows indefinitely.
+
+## Environment
+- OS: Any
+- Python version: Source analysis
+- Docker version: N/A
+- Chat platform: LINE WORKS
+- Flowise version: N/A
+
+## Logs
+```text
+Relevant code paths:
+- chat-connector/app/services/openrouter.py:20-33
+```
+
+## Additional Context
+This also creates uneven behavior across scaled instances because the state is process-local rather than shared.
+
+Evidence
+- [chat-connector/app/services/openrouter.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/services/openrouter.py:20)
+
+Suggested fix
+- Add a bounded LRU or TTL cache around `chat_history`
+- Or remove server-side memory in OpenRouter mode and rely on an external store if conversation state is required
+
