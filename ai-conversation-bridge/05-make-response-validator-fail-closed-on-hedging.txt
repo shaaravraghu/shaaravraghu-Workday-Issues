@@ -1,0 +1,49 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Make `ResponseValidator` fail closed when it detects hedging/tool-less answers
+
+## Description
+`ResponseValidator` claims to "catch common hallucination signals and enforce quality gates", but hedging matches only produce a warning log and the response is still returned to the user. In an HR/Finance assistant, this means unreliable tool-less answers can still be delivered after being flagged internally.
+
+## Component
+- [x] Chat Connector
+- [ ] Flowise Flow
+- [ ] Demo MCP Server
+- [ ] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Call `ResponseValidator.validate("I think you probably have 12 days left")`.
+2. Observe that the validator logs a warning but still returns the original text.
+
+## Expected Behavior
+Once the validator identifies strong hallucination/hedging indicators, it should either:
+1. replace the response with the safe fallback, or
+2. mark the answer for a retry/tool-only recovery path.
+
+## Actual Behavior
+The validator passes the risky answer through unchanged.
+
+## Environment
+- OS: Any
+- Python version: Source analysis
+- Docker version: N/A
+- Chat platform: Any
+- Flowise version: Any
+
+## Logs
+```text
+Relevant code paths:
+- chat-connector/app/response_validator.py:29-74
+```
+
+## Additional Context
+This is particularly visible because the class docstring promises stronger protection than the implementation actually provides.
+
+Evidence
+- [chat-connector/app/response_validator.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/response_validator.py:29)
+
+Suggested fix
+- Convert hedging detection into a fail-closed behavior for tool-grounded intents
+- Consider returning the existing safe fallback or triggering a second-pass tool retry
+
