@@ -1,0 +1,36 @@
+Issue Type: Feature Request
+Recommended Visibility: Public issue
+Suggested Title: Add CI for `ruff`, Python smoke tests, and container build verification
+
+## Problem
+The repository currently has security/scanning workflows (`CodeQL`, `Semgrep`, `TruffleHog`, `Scorecard`, Dependabot automation), but no workflow that enforces the contributor guidance in `CONTRIBUTING.md` such as `ruff check`, test execution, or container build verification.
+
+## Proposed Solution
+Add a CI workflow that runs at least:
+- `ruff check`
+- Python smoke tests or `pytest` once tests exist
+- a minimal import/compile step
+- container build verification for `chat-connector` and `mcp-demo-server`
+
+## Component
+- [x] Chat Connector (new platform, adapter improvement)
+- [ ] Flowise Flow (new flow template, node configuration)
+- [x] Demo MCP Server (new tool, mock data)
+- [x] Documentation
+- [ ] Other
+
+## Alternatives Considered
+- Keep relying on manual contributor discipline
+- Add only linting without container verification
+
+## Additional Context
+Evidence
+- [CONTRIBUTING.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/CONTRIBUTING.md:58)
+- [chat-connector/requirements.txt](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/requirements.txt:6)
+- [.github/workflows/codeql.yml](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/.github/workflows/codeql.yml:1)
+- [.github/workflows/semgrep.yml](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/.github/workflows/semgrep.yml:1)
+- [.github/workflows/trufflehog.yml](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/.github/workflows/trufflehog.yml:1)
+- [.github/workflows/scorecard.yml](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/.github/workflows/scorecard.yml:1)
+
+The current workflow set is strong on security scanning but does not verify day-to-day correctness/buildability.
+
