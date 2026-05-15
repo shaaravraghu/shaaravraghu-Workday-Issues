@@ -1,0 +1,52 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Ship a runnable demo MCP configuration in the exported Flowise template
+
+## Description
+The exported Flowise template includes a placeholder MCP URL (`https://YOUR_MCP_SERVER_URL/mcp`) and a bearer-token header, even though the demo MCP server in this repo has no authentication. This means the imported template is not runnable against the repo’s own demo server until the user manually edits the MCP configuration.
+
+## Component
+- [ ] Chat Connector
+- [x] Flowise Flow
+- [ ] Demo MCP Server
+- [x] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Import `flowise/flows/workday-mcp-agent.json` into Flowise.
+2. Inspect the Custom MCP tool config inside the agent node.
+3. Observe that the stored JSON points to a placeholder URL and includes an `Authorization` header.
+
+## Expected Behavior
+The default exported demo flow should either:
+- already target a documented demo-safe config shape, or
+- use an obviously disabled placeholder that does not imply auth for the unauthenticated demo server.
+
+## Actual Behavior
+The exported JSON bakes in a placeholder server URL and auth header that do not match the demo MCP server defaults.
+
+## Environment
+- OS: Any
+- Python version: N/A
+- Docker version: N/A
+- Chat platform: N/A
+- Flowise version: Any compatible version
+
+## Logs
+```text
+Relevant files:
+- flowise/flows/workday-mcp-agent.json:727-733
+- flowise/README.md:80-99
+- mcp-demo-server/README.md:81-89
+```
+
+## Additional Context
+Evidence
+- [flowise/flows/workday-mcp-agent.json](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/flowise/flows/workday-mcp-agent.json:727)
+- [flowise/README.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/flowise/README.md:80)
+- [mcp-demo-server/README.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/mcp-demo-server/README.md:81)
+
+Suggested fix
+- Export the template with a no-auth demo example
+- Or provide separate “demo” and “production” flow JSON files
+
