@@ -1,0 +1,45 @@
+Suggested Title: Align StatusIndicator variant types, docs, and implementation
+Suggested Template: bug
+Suggested Labels: bug
+
+## 🐛 Bug Report
+
+`modules/preview-react/status-indicator/lib/StatusIndicator.tsx` and its docs do not agree on which `variant` values are actually supported.
+
+## To Reproduce
+
+1. Review `StatusIndicatorVariant` in `modules/preview-react/status-indicator/lib/StatusIndicator.tsx`.
+2. Compare it with the prop docs in the same file and with `modules/preview-react/status-indicator/stories/StatusIndicator.mdx`.
+3. Compare those with the actual stencil modifier keys and deprecated variant map.
+
+## Expected Behavior
+
+The public contract should consistently describe the same set of supported `variant` values across:
+- TypeScript types
+- inline prop docs
+- Storybook docs
+- implementation mapping logic
+
+## Actual Results
+
+There are multiple inconsistencies:
+- the prop docs mention `illuminate`
+- the `StatusIndicatorVariant` type does not include `illuminate`
+- Storybook docs list legacy color names like `gray`, `orange`, `blue`, `green`, and `red`
+- the stencil modifiers are keyed by semantic names like `neutral`, `caution`, `info`, `positive`, and `critical`
+
+## Browser (if applicable)
+
+N/A
+
+## Link to repl or repo (highly encouraged)
+
+Repo paths:
+- `modules/preview-react/status-indicator/lib/StatusIndicator.tsx`
+- `modules/preview-react/status-indicator/stories/StatusIndicator.mdx`
+
+### Error Output
+
+```bash
+No runtime error captured yet. The issue is based on conflicting public API definitions in the source and docs.
+```
