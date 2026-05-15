@@ -1,0 +1,50 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Persist demo time-off submissions so follow-up history lookups reflect the request
+
+## Description
+`request_my_time_off()` returns a success payload, but it does not update any in-memory or file-backed history state. As a result, a user can "submit" a request and then immediately ask for their time-off history without seeing the request they just created.
+
+## Component
+- [ ] Chat Connector
+- [ ] Flowise Flow
+- [x] Demo MCP Server
+- [ ] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Call `request_my_time_off(start_date="2026-05-20", end_date="2026-05-21", time_off_type="vacation")`.
+2. Then call `get_current_user_time_off_history()`.
+3. Observe that the new request is missing from the returned history.
+
+## Expected Behavior
+The demo tool should either persist the new request in demo state or clearly state that write operations are stateless/no-op simulations.
+
+## Actual Behavior
+The tool reports `"status": "submitted"` but does not affect subsequent reads.
+
+## Environment
+- OS: Any
+- Python version: Source analysis
+- Docker version: N/A
+- Chat platform: Any
+- Flowise version: Any
+
+## Logs
+```text
+Relevant code paths:
+- mcp-demo-server/main.py:97-106
+- mcp-demo-server/main.py:192-215
+```
+
+## Additional Context
+This makes the demo feel inconsistent during end-to-end testing because write and read tools do not agree.
+
+Evidence
+- [mcp-demo-server/main.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/mcp-demo-server/main.py:97)
+- [mcp-demo-server/main.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/mcp-demo-server/main.py:192)
+
+Suggested fix
+- Update demo history in memory during the process lifetime
+- Or store/replay write operations from a lightweight local state file used only for demos
+
