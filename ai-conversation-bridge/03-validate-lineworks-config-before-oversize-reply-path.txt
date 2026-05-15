@@ -1,0 +1,50 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Validate LINE WORKS config before trying to send the oversize-message reply
+
+## Description
+The `/callback` handler sends an overlength warning message before it checks whether LINE WORKS configuration is complete. If any required LINE WORKS credential is missing, the "message too long" path can raise inside `send_message()` and return `500` instead of handling the request cleanly.
+
+## Component
+- [x] Chat Connector
+- [ ] Flowise Flow
+- [ ] Demo MCP Server
+- [ ] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Leave one or more required LINE WORKS credentials unset.
+2. POST a webhook payload containing a text body longer than `MAX_MESSAGE_LENGTH`.
+3. Observe that the handler reaches `lw_client.send_message(...)` before it reaches `lw_client.validate_config()`.
+
+## Expected Behavior
+Configuration should be validated before any outbound LINE WORKS API call, including the oversize-message branch.
+
+## Actual Behavior
+The branch at `routes.py:77-87` tries to send a reply first, while config validation does not happen until `routes.py:89-91`.
+
+## Environment
+- OS: Any
+- Python version: Source analysis
+- Docker version: N/A
+- Chat platform: LINE WORKS
+- Flowise version: N/A
+
+## Logs
+```text
+Relevant code paths:
+- chat-connector/app/routes.py:77-91
+- chat-connector/app/services/lineworks.py:121-130
+```
+
+## Additional Context
+This is subtle because the normal success path validates config, but the oversize-message guard does not.
+
+Evidence
+- [chat-connector/app/routes.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/routes.py:77)
+- [chat-connector/app/services/lineworks.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/services/lineworks.py:121)
+
+Suggested fix
+- Move `validate_config()` ahead of all `send_message()` calls
+- Or short-circuit the oversize path with a logged `500`/`503` when the connector is misconfigured
+
