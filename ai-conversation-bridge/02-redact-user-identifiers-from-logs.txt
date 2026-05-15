@@ -1,0 +1,56 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Redact LINE WORKS user identifiers from chat connector logs
+
+## Description
+The chat connector logs raw user identifiers in multiple places, even though the enterprise hardening guide explicitly calls out log sanitization as a high-priority production task. This creates an unnecessary PII leak into centralized logging backends.
+
+## Component
+- [x] Chat Connector
+- [ ] Flowise Flow
+- [ ] Demo MCP Server
+- [ ] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Inspect the `/callback` handler in `chat-connector/app/routes.py`.
+2. Send a normal text message through the webhook flow.
+3. Observe that the logs include the raw `userId` on receipt, oversize-message warnings, and send confirmation.
+
+## Expected Behavior
+Logs should avoid printing raw user identifiers. A hashed, truncated, or request-correlated identifier should be used instead.
+
+## Actual Behavior
+The code logs `userId` directly:
+- `Received callback from user: ...`
+- `Message from <user_id> exceeds max length ...`
+- `Sent reply to user <user_id>`
+
+## Environment
+- OS: Any
+- Python version: Source analysis
+- Docker version: N/A
+- Chat platform: LINE WORKS
+- Flowise version: N/A
+
+## Logs
+```text
+Relevant code paths:
+- chat-connector/app/routes.py:56
+- chat-connector/app/routes.py:79
+- chat-connector/app/routes.py:107
+- docs/enterprise-guide.md:31-34
+```
+
+## Additional Context
+The repo already documents log sanitization as a P1 recommendation, so there is a clear code/docs mismatch.
+
+Evidence
+- [chat-connector/app/routes.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/routes.py:56)
+- [docs/enterprise-guide.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/docs/enterprise-guide.md:31)
+
+Suggested fix
+- Introduce a helper that redacts or hashes user identifiers before logging
+- Add a request/correlation ID so traces remain useful after redaction
+- Consider switching to structured JSON logs for downstream filtering
+
