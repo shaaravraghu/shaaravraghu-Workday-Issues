@@ -1,0 +1,58 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Validate time-off date ranges and entitlements in `request_my_time_off`
+
+## Description
+`request_my_time_off()` only validates the leave type. It accepts invalid date strings, end dates before start dates, and requests that may exceed the worker’s balance or eligibility rules.
+
+## Component
+- [ ] Chat Connector
+- [ ] Flowise Flow
+- [x] Demo MCP Server
+- [ ] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Call `request_my_time_off(start_date="not-a-date", end_date="2026-05-01", time_off_type="vacation")`.
+2. Call `request_my_time_off(start_date="2026-05-10", end_date="2026-05-01", time_off_type="vacation")`.
+3. Call `request_my_time_off()` for a leave type or duration that exceeds the current worker’s balances/eligibility.
+4. Observe that the tool still returns `"status": "submitted"` in all of these cases.
+
+## Expected Behavior
+The demo should validate:
+- date parsing
+- start/end ordering
+- eligibility for the requested leave type
+- sufficient available balance when that information exists in mock data
+
+## Actual Behavior
+Only `time_off_type` membership is checked.
+
+## Environment
+- OS: Any
+- Python version: Source analysis
+- Docker version: N/A
+- Chat platform: Any
+- Flowise version: Any
+
+## Logs
+```text
+Relevant code paths:
+- mcp-demo-server/main.py:193-215
+- mcp-demo-server/mock_data/time_off_balances.json
+- mcp-demo-server/mock_data/time_off_eligibility.json
+```
+
+## Additional Context
+The mock data already contains enough information to perform a more realistic validation pass.
+
+Evidence
+- [mcp-demo-server/main.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/mcp-demo-server/main.py:193)
+- [mcp-demo-server/mock_data/time_off_balances.json](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/mcp-demo-server/mock_data/time_off_balances.json:1)
+- [mcp-demo-server/mock_data/time_off_eligibility.json](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/mcp-demo-server/mock_data/time_off_eligibility.json:1)
+
+Suggested fix
+- Parse the dates and reject invalid formats
+- Reject `end_date < start_date`
+- Cross-check `eligible_types` and current balances before returning a submitted result
+
