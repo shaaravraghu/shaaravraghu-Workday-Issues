@@ -1,0 +1,51 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Reject unsupported `CHAT_PROVIDER` values instead of silently falling back to Flowise
+
+## Description
+The app accepts any `CHAT_PROVIDER` string, but only `openrouter` is handled explicitly. Any other value falls through to the Flowise client path. This creates a confusing mismatch: a typo like `CHAT_PROVIDER=flowse` will make the service behave like Flowise while the health endpoint still reports the unsupported provider string.
+
+## Component
+- [x] Chat Connector
+- [ ] Flowise Flow
+- [ ] Demo MCP Server
+- [ ] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Set `CHAT_PROVIDER=flowse` or another unsupported value.
+2. Start the app.
+3. Inspect `chat-connector/app/routes.py`.
+4. Observe that the global client initialization falls through to `FlowiseClient`, while the health route still returns the original `CHAT_PROVIDER` value.
+
+## Expected Behavior
+Unsupported provider values should fail fast at startup or be normalized to a known enum with validation.
+
+## Actual Behavior
+Unknown values silently use the Flowise client branch.
+
+## Environment
+- OS: Any
+- Python version: Source analysis
+- Docker version: N/A
+- Chat platform: Any
+- Flowise version: Any
+
+## Logs
+```text
+Relevant code paths:
+- chat-connector/app/config.py:16-29
+- chat-connector/app/routes.py:16-31
+- chat-connector/app/routes.py:34-37
+```
+
+## Additional Context
+Evidence
+- [chat-connector/app/config.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/config.py:16)
+- [chat-connector/app/routes.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/routes.py:16)
+- [chat-connector/app/routes.py](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/chat-connector/app/routes.py:34)
+
+Suggested fix
+- Validate `CHAT_PROVIDER` against an allowlist at startup
+- Exit early with a clear configuration error for unsupported values
+
