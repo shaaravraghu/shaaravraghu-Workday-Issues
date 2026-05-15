@@ -1,0 +1,56 @@
+Issue Type: Bug Report
+Recommended Visibility: Public issue
+Suggested Title: Hide or complete the translated setup guide links until the localized content exists
+
+## Description
+The English setup guide presents Japanese, Korean, Simplified Chinese, and Traditional Chinese navigation links as if translated setup docs are available. In practice, each linked file is only a short "currently being translated" stub. This creates a misleading navigation experience for non-English readers.
+
+## Component
+- [ ] Chat Connector
+- [ ] Flowise Flow
+- [ ] Demo MCP Server
+- [x] Documentation
+- [ ] Other
+
+## Steps to Reproduce
+1. Open `docs/setup-guide.md`.
+2. Click any localized language link in the header.
+3. Observe that the destination page is only a placeholder stub rather than a translated setup guide.
+
+## Expected Behavior
+Either:
+- provide translated setup content, or
+- clearly mark the links in the English nav as incomplete/unavailable until translation is finished.
+
+## Actual Behavior
+The navigation suggests full translations, but the linked pages contain only a short placeholder message.
+
+## Environment
+- OS: Any
+- Python version: N/A
+- Docker version: N/A
+- Chat platform: N/A
+- Flowise version: N/A
+
+## Logs
+```text
+Relevant files:
+- docs/setup-guide.md:3-9
+- i18n/ja/docs/setup-guide.md:13-18
+- i18n/ko/docs/setup-guide.md:13-18
+- i18n/zh-Hans/docs/setup-guide.md:13-18
+- i18n/zh-Hant/docs/setup-guide.md:13-18
+```
+
+## Additional Context
+Evidence
+- [docs/setup-guide.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/docs/setup-guide.md:3)
+- [i18n/ja/docs/setup-guide.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/i18n/ja/docs/setup-guide.md:13)
+- [i18n/ko/docs/setup-guide.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/i18n/ko/docs/setup-guide.md:13)
+- [i18n/zh-Hans/docs/setup-guide.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/i18n/zh-Hans/docs/setup-guide.md:13)
+- [i18n/zh-Hant/docs/setup-guide.md](/Users/shaarav/Documents/GitHub_Projects/Workday-Forks/Workday-AI-Conversation-Bridge-Issues/i18n/zh-Hant/docs/setup-guide.md:13)
+
+Suggested fix
+- Replace the links with explicit "translation in progress" labels
+- Or move unfinished locales to a separate section until real translations are available
+
