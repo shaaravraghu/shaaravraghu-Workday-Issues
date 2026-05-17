@@ -1,0 +1,33 @@
+Type: Feature Request
+Title: [Feature]: Reduce release workflow permissions to least privilege
+Labels: enhancement
+
+What would you like to see?
+Scope GitHub workflow permissions as narrowly as possible, especially for `.github/workflows/release.yaml`.
+
+What problem does this solve?
+The release workflow declares `permissions: contents: write` at the workflow level, which grants broad write capability to the whole workflow even though only the release-creation step needs elevated access. Narrower permissions reduce blast radius if a step or dependency is compromised.
+
+How would you use this feature?
+1. Keep release creation behavior the same.
+2. Move elevated permissions to the smallest job or step that needs them.
+3. Leave read-only defaults elsewhere.
+
+How do you imagine this working?
+Use read-only defaults at workflow scope, then grant `contents: write` only on the release job if GitHub requires it there.
+
+Have you tried any workarounds?
+No workaround beyond manual review of workflow permissions.
+
+Examples or References
+Relevant lines:
+- `.github/workflows/release.yaml:9-10`
+- `.github/workflows/release.yaml:35-41`
+- `.github/workflows/publish.yaml:8-10` as a better example of a more targeted permission set
+
+How important is this to you?
+Important - would improve my workflow significantly
+
+Additional Context
+This would bring the workflow closer to the repository's stated least-privilege guidance for CI and release automation.
+
