@@ -1,0 +1,31 @@
+Title: AnnotationProcessor drops annotations applied to generic declared type usages
+Category: Bug
+Priority: High
+Modules: `jdk-annotation-processor`, `codemodel-foundation`
+Validation: Static analysis
+
+Summary:
+`AnnotationProcessor.resolveTypeUsage(...)` applies type-use annotations when a declared type has no type parameters, but it does not apply those same annotations when the declared type is generic. This means annotations attached to a generic declared type usage can disappear from the code model.
+
+Evidence:
+- `jdk-annotation-processor/src/main/java/build/codemodel/annotation/processing/AnnotationProcessor.java:651-679`
+- In the non-generic branch, annotations are copied onto `SpecificTypeUsage`.
+- In the generic branch, `GenericTypeUsage` is created and a TODO is left at line 676 instead of applying annotations.
+
+Likely impact:
+- Type-use annotations such as nullability, DI qualifiers, or custom semantic markers can be lost when attached to generic declared types.
+- Downstream enrichers, compilers, or generators that depend on those annotations may behave differently for `List<String>` than for `String`, even when the annotations are otherwise equivalent.
+
+Expected behavior:
+If a declared type usage carries annotations, the resolved `TypeUsage` should preserve them regardless of whether the type is generic.
+
+Actual behavior:
+Generic declared types are resolved without copying `annotations.get(pendingTypeMirror)` onto the resulting `GenericTypeUsage`.
+
+Suggested confirmation steps:
+1. Add a source sample that annotates a generic declared type usage, such as `@MyQualifier List<String>`.
+2. Run discovery through the annotation processor.
+3. Inspect the resulting `TypeUsage` traits and compare with a non-generic annotated usage.
+
+Suggested fix direction:
+Mirror the non-generic branch by applying `annotations.get(pendingTypeMirror).forEach(genericTypeUsage::addTrait)` before storing the resolved value.
