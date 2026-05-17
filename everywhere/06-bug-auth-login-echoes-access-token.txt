@@ -1,0 +1,35 @@
+Type: Bug Report
+Title: [Bug]: `everywhere auth login` echoes access tokens during interactive entry
+Labels: bug
+
+What happened?
+The interactive token prompt uses `readline.question()` with a normal terminal output stream, so pasted JWTs are visible on screen while being entered.
+
+Steps to Reproduce
+1. Open `cli/src/commands/everywhere/auth/login.ts`.
+2. Locate `promptForToken()`.
+3. Notice that it creates a standard readline interface and calls `rl.question('Paste your access token: ', ...)`.
+4. Run the command interactively and paste a token.
+
+What did you expect to happen?
+I expected the token prompt to hide or mask sensitive input so secrets are not displayed in the terminal or screen recordings.
+
+What actually happened?
+The token is echoed back as plain terminal input during entry.
+
+Screenshots or Logs
+Relevant lines:
+- `cli/src/commands/everywhere/auth/login.ts:49-60`
+
+Environment Information
+- Node.js version: not executed during this review
+- SDK version: `0.2.2`
+- Operating System: macOS
+- Package manager: npm
+
+Additional Context
+The token is later stored locally by design, but showing it during input is still an avoidable exposure risk for shared screens, terminal scrollback, and session recordings.
+
+How often does this happen?
+Every time
+
