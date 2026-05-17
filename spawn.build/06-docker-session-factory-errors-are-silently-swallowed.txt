@@ -1,0 +1,43 @@
+Title
+Sessions.factories() silently discards failing Docker session factories
+
+Type
+Bug
+
+Severity
+Medium
+
+Modules
+- spawn-docker
+
+Evidence
+- `spawn-docker/src/main/java/build/spawn/docker/Sessions.java:64-74`
+- Provider creation and DI injection are wrapped in a `try/catch`.
+- Any exception causes `return null`, followed by `.filter(Objects::nonNull)`.
+
+Why this matters
+- Broken service registration, wiring errors, or initialization problems disappear without any logging.
+- Callers then only see `Optional.empty()` from `createSession(...)`, which looks like "no Docker available" rather than "a factory crashed".
+
+Expected behavior
+- A failing factory should either be logged with context or surfaced explicitly.
+
+Actual behavior
+- Factory failures are swallowed silently.
+- Diagnostics for session discovery become much harder than necessary.
+
+Suggested reproduction
+1. Introduce a session factory whose constructor or injection path throws.
+2. Call `Sessions.createSession(...)`.
+3. Observe that the broken factory disappears silently from discovery.
+
+Suggested fix
+- Log the exception together with the provider class name.
+- Consider continuing after logging, but do not silently erase the failure.
+
+Suggested tests
+- Add a fake factory in test scope that throws during injection and assert that the failure is observable.
+
+Issue body ready to paste
+`Sessions.factories()` catches provider/injection exceptions and returns `null`, which is then filtered out. This makes broken Docker session factories vanish silently and turns real wiring failures into an unhelpful `Optional.empty()` from `createSession(...)`.`
+
