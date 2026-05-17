@@ -1,0 +1,38 @@
+Type: Bug Report
+Title: [Bug]: GitHub issue templates use `npx everywhere build` placeholders that do not match the documented package invocation
+Labels: bug
+
+What happened?
+The issue templates suggest reproduction and feature-request examples using `npx everywhere build`, while the rest of the docs primarily use `npx @workday/everywhere ...`.
+
+Steps to Reproduce
+1. Open `.github/ISSUE_TEMPLATE/bug_report.yaml`.
+2. Open `.github/ISSUE_TEMPLATE/feature_request.yaml`.
+3. Compare the placeholder command examples with the README command style.
+
+What did you expect to happen?
+I expected the issue templates to reinforce the same command examples users see in the main docs.
+
+What actually happened?
+The placeholders use a different `npx` invocation, which can propagate the same onboarding confusion into new issue reports.
+
+Screenshots or Logs
+Relevant lines:
+- `.github/ISSUE_TEMPLATE/bug_report.yaml:27-30`
+- `.github/ISSUE_TEMPLATE/feature_request.yaml:39-42`
+- `README.md:10-11`
+- `README.md:26`
+- `README.md:62`
+
+Environment Information
+- Node.js version: not executed during this review
+- SDK version: `0.2.2`
+- Operating System: macOS
+- Package manager: npm
+
+Additional Context
+Fixing this would help keep issue reports more consistent because reporters often copy placeholder commands verbatim.
+
+How often does this happen?
+Every time
+
