@@ -1,0 +1,51 @@
+ISSUE TITLE
+`isSysColor` assumes a narrow `original.value` shape and can throw on unexpected object-valued tokens
+
+ISSUE TYPE
+Build robustness bug
+
+PRIORITY
+Medium
+
+SUGGESTED LABELS
+bug, build, resilience
+
+AFFECTED FILES
+- packages/canvas-tokens/utils/filters/index.ts:35-40
+- packages/canvas-tokens/utils/transformers/index.ts:52-69
+
+SUMMARY
+The `isSysColor` matcher assumes that any non-string `original.value` has both a `length` property and a `.some()` method, and that each entry has a `.color` string. That is a fragile assumption and can throw if token shapes evolve or if malformed token data is introduced from the source system.
+
+WHY THIS MATTERS
+- The matcher is reused by both `value/flatten-rgba` and `value/flatten-oklch`.
+- A single unexpected token shape can break the whole build step.
+- The current code is not defensive enough for data synchronized from external token-authoring tools.
+
+EVIDENCE
+- `filters/index.ts:35-40` branches on `typeof original.value === 'string'`.
+- The non-string branch immediately evaluates:
+  - `original.value.length`
+  - `original.value.some(...)`
+  - `v.color.includes(...)`
+- `transformers/index.ts:52-69` shows this matcher is used to gate color flattening transforms.
+
+REPRODUCTION
+1. Feed a token with `original.value` as an object instead of a string or array of objects.
+2. Run the matching logic.
+3. Observe that `.some()` and `.color.includes()` are not guaranteed to exist.
+
+EXPECTED RESULT
+The matcher should safely return `false` for unsupported shapes instead of throwing.
+
+ACTUAL RESULT
+The implementation assumes a specific array-of-objects shape and is not defensive.
+
+SUGGESTED FIX DIRECTION
+- Guard with `Array.isArray(original.value)` before using `.some()`.
+- Validate that each array entry contains a string `color` property before calling `.includes()`.
+
+ACCEPTANCE CRITERIA
+- Unsupported shapes do not crash the build.
+- Matcher tests cover string, array, object, null, and malformed entry cases.
+
