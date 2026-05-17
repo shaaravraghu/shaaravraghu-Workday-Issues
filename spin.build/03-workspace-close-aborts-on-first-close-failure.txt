@@ -1,0 +1,48 @@
+Issue Title
+Workspace.close() aborts shutdown on the first close failure and skips remaining extensions
+
+Type
+Bug
+
+Priority
+High
+
+Component
+spin-api
+
+Suggested Labels
+bug, lifecycle, shutdown
+
+Affected Files
+- spin-api/src/main/java/build/spin/Workspace.java
+
+Summary
+If any auto-closeable plugin throws during `Workspace.close()`, the implementation wraps the exception in a `RuntimeException` and stops iteration immediately. Remaining plugins are not closed.
+
+Evidence
+- The `forEach` body throws a `RuntimeException` from inside shutdown at `Workspace.java:61-67`.
+
+Impact
+One faulty close path can leave the rest of the workspace partially alive. That creates inconsistent teardown, hidden leaks, and brittle test or server shutdown behavior.
+
+Reproduction Inputs
+1. Add two auto-closeable plugins to a project.
+2. Make the first plugin throw from `close()`.
+3. Make the second plugin record whether its `close()` method runs.
+4. Call `Workspace.close()`.
+
+Expected Result
+Shutdown should attempt to close every closeable extension, then report aggregated failures.
+
+Actual Result
+Shutdown stops at the first failure.
+
+Suggested Fix Direction
+- Collect close exceptions and continue closing the remaining extensions.
+- Re-throw a combined exception after traversal completes.
+
+Required Inputs For Filing
+- Severity: High
+- User-facing symptom: partial shutdown and leaked follow-on resources
+- Code references: Workspace.java:57-68
+- Regression risk: medium
