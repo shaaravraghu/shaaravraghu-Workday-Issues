@@ -1,0 +1,47 @@
+Title
+ApplicationStream.clone() returns an empty stream because clone launch logic is commented out
+
+Type
+Bug
+
+Severity
+High
+
+Modules
+- spawn-application-composition
+
+Evidence
+- `spawn-application-composition/src/main/java/build/spawn/application/composition/Composition.java:329-368`
+- The method allocates `applications`, builds `launchOptions`, and generates new identifiers.
+- The actual clone launch path is fully commented out at lines 351-364.
+- The method therefore always returns `applications.stream()` with no added entries.
+
+Why this matters
+- `ApplicationStream.clone(...)` is part of the public composition API.
+- Callers will reasonably expect new applications to be launched.
+- The current implementation silently reports success with an empty result instead of failing fast or cloning anything.
+
+Expected behavior
+- Each source application should be relaunched `count` times with the documented option override behavior.
+
+Actual behavior
+- No clone is ever launched.
+- No clone is ever added back into the composition.
+- The result is an empty `ApplicationStream`.
+
+Suggested reproduction
+1. Build a `Composition` with one launched application.
+2. Call `composition.stream().clone()`.
+3. Observe that the returned stream contains zero applications.
+
+Suggested fix
+- Either complete the commented launch path or temporarily remove/disable the API until it is implemented.
+- At minimum, fail explicitly if cloning is unsupported instead of silently returning an empty stream.
+
+Suggested tests
+- Add a composition test asserting that `clone(1)` returns exactly one new application.
+- Add a test asserting that cloned applications receive a fresh `ApplicationIdentifier`.
+
+Issue body ready to paste
+`ApplicationStream.clone(...)` in `Composition` is effectively unimplemented. The method builds launch options and new identifiers, but the actual clone-launch code is commented out in `Composition.java:351-364`, so the returned stream is always empty. This makes the public API silently no-op instead of cloning applications.`
+
