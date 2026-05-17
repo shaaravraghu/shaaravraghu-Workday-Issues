@@ -1,0 +1,44 @@
+Title
+AttachContainer exposes a Terminal but hard-disables stdin
+
+Type
+Bug
+
+Severity
+High
+
+Modules
+- spawn-docker-jdk
+
+Evidence
+- `spawn-docker-jdk/src/main/java/build/spawn/docker/jdk/command/AttachContainer.java:62-64`
+- The attach request is created with `stdin=false`.
+- `AttachContainer.java:75-91` leaves stdin as TODO and returns `NullWriter.get()` from `getInputWriter()`.
+
+Why this matters
+- The returned type is a `Terminal`, which strongly suggests interactive attach support.
+- In practice the attach session is read-only and cannot send input to the container.
+
+Expected behavior
+- Either stdin should be wired through correctly, or the API should not expose a writable terminal contract.
+
+Actual behavior
+- Consumers receive a terminal whose input writer is a no-op.
+- Docker attach is limited to stdout/stderr streaming even though the abstraction suggests interactivity.
+
+Suggested reproduction
+1. Attach to a container running an interactive shell.
+2. Write to `terminal.getInputWriter()`.
+3. Observe that the container never receives the input.
+
+Suggested fix
+- Change the attach request to enable stdin when appropriate.
+- Connect a real writer to the Docker attach stream.
+- If full interactivity is not supported yet, document that clearly or expose a read-only abstraction instead.
+
+Suggested tests
+- Add an integration test that attaches to an interactive container and verifies stdin round-tripping.
+
+Issue body ready to paste
+`AttachContainer` returns a `Terminal`, but it explicitly sends `stdin=false` in the Docker request and returns `NullWriter` from `getInputWriter()`. That makes interactive attach impossible while still advertising a writable terminal abstraction.`
+
