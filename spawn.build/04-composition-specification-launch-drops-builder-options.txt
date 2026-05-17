@@ -1,0 +1,45 @@
+Title
+Composition.Builder.build() drops builder/composable options and generated identifiers when launching a Specification
+
+Type
+Bug
+
+Severity
+High
+
+Modules
+- spawn-application-composition
+
+Evidence
+- `spawn-application-composition/src/main/java/build/spawn/application/composition/Composition.java:762-782`
+- The method merges builder options, composable options, `ApplicationIdentifier`, and `SystemProperty` into `launchOptions`.
+- If `composable.specification != null`, the code ignores `launchOptions` and calls `platform.launch(composable.specification)` instead.
+
+Why this matters
+- Composition-level defaults and per-composable overrides do not apply consistently.
+- Generated composition metadata such as `ApplicationIdentifier` can be skipped entirely for specification-backed entries.
+- This breaks the mental model that the builder controls launch policy uniformly.
+
+Expected behavior
+- Specification-backed composables should still receive builder defaults, composable overrides, and generated composition identifiers.
+
+Actual behavior
+- Those merged options are applied only for `applicationClass` launches, not `Specification` launches.
+
+Suggested reproduction
+1. Create a `Composition.Builder` with a default option such as a diagnostic naming provider or system property.
+2. Add one composable with `add(applicationClass)` and another with `add(specification)`.
+3. Build the composition.
+4. Compare resulting application configurations and observe that only the class-based launch receives the builder-generated options.
+
+Suggested fix
+- Build a new launchable specification or configuration from the original specification plus the merged builder/composable options.
+- Ensure generated composition identifiers are applied to both paths.
+
+Suggested tests
+- Add a test verifying that `ApplicationIdentifier` is present for `add(specification)`.
+- Add a test proving builder defaults and `Composable.with(...)` overrides apply equally to both launch paths.
+
+Issue body ready to paste
+`Composition.Builder.build()` merges defaults and generated identifiers into `launchOptions`, but that merged configuration is only used when launching from `applicationClass`. The `Specification` path bypasses `launchOptions` entirely via `platform.launch(composable.specification)`, so specification-backed entries miss composition-level defaults and generated metadata.`
+
