@@ -1,0 +1,51 @@
+Issue Title
+WorkspaceConsole hardcodes host, port, and allowed origin instead of using runtime configuration
+
+Type
+Bug / configuration gap
+
+Priority
+Medium
+
+Component
+spin-console-module
+
+Suggested Labels
+bug, configuration, graphql, server-mode
+
+Affected Files
+- spin-modules/spin-console-module/src/main/java/build/spin/module/console/WorkspaceConsole.java
+
+Summary
+The console daemon binds to `0.0.0.0:8080` and allows only `http://127.0.0.1:3000` for CORS through hardcoded constants. It does not consume the standard runtime server configuration, which makes it easy to collide with existing services or expose the endpoint more broadly than intended.
+
+Evidence
+- Hardcoded CORS origin at `WorkspaceConsole.java:52`.
+- Hardcoded host at `WorkspaceConsole.java:57`.
+- Hardcoded port at `WorkspaceConsole.java:62`.
+- Startup always uses these constants at `WorkspaceConsole.java:101-117`.
+
+Impact
+Operators cannot align the console with runtime options, environment expectations, or security posture. Port collisions and unwanted network exposure become more likely.
+
+Reproduction Inputs
+1. Start the console on a machine where port 8080 is already in use, or where only loopback binding is desired.
+2. Observe that the module still tries to bind `0.0.0.0:8080`.
+3. Try accessing from an origin other than `http://127.0.0.1:3000`.
+
+Expected Result
+Host, port, and allowed origins should come from runtime options or configuration resources.
+
+Actual Result
+They are hardcoded in the daemon implementation.
+
+Suggested Fix Direction
+- Inject server/network options instead of embedding constants.
+- Default to loopback unless explicit external exposure is requested.
+- Make CORS origin configuration workspace- or CLI-configurable.
+
+Required Inputs For Filing
+- Severity: Medium
+- User-facing symptom: no safe or flexible network configuration for the console daemon
+- Code references: WorkspaceConsole.java:52-62 and 101-117
+- Regression risk: medium
