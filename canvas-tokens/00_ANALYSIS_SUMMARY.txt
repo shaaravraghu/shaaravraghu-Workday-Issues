@@ -1,0 +1,57 @@
+Repository: Workday canvas-tokens
+Analysis date: 2026-05-16
+Analyst: Codex
+
+Objective
+Create 10+ issue-ready text files based on a deep repository review, plus one separate file that explains how to raise the issues.
+
+What I reviewed
+- Contribution and maintainer docs: CONTRIBUTING.md, MAINTAINING.md, README.md
+- Root workspace config: package.json, tsconfig.json, jest.config.ts, nx.json
+- Token build pipeline: packages/canvas-tokens/build.ts
+- Core build utilities: packages/canvas-tokens/utils/*
+- Tests: packages/canvas-tokens/utils/spec/*
+- Docs app content and components: packages/canvas-tokens-docs/stories/* and components/*
+- Package metadata: packages/canvas-tokens/package.json, packages/canvas-tokens-web/package.json, packages/canvas-tokens-docs/package.json
+- Token sources: base, brand, sys, component, and deprecated token JSON files
+- Support scripts in scripts/utils/*
+- Generated package changelog: packages/canvas-tokens-web/CHANGELOG.md
+
+What I verified during analysis
+- There are valid token references across the inspected JSON sources. A local reference scan found 678 references and 0 missing targets.
+- The repo contains a real component token level in both source data and build config.
+- The root package exposes a typecheck script, but the root tsconfig currently includes only JSON files.
+- The maintainer guide references scripts and files that do not exist in the current workspace.
+
+Constraints and limits
+- Runtime package-manager verification was partially blocked because `yarn` is not installed in this local environment. `yarn test` could not be executed here.
+- Findings therefore rely on source inspection, existing tests, repo configuration, and targeted local scans instead of a full dependency-backed build.
+
+How the issue set is organized
+- 01-06 focus on build and code-generation risks.
+- 07-12 focus on docs-site behavior, migration guidance, and contributor-facing documentation drift.
+
+Issue draft inventory
+- 01_typecheck_ignores_typescript_sources.txt
+- 02_maintaining_guide_references_missing_sync_scripts.txt
+- 03_component_tokens_missing_from_token_inventory_script.txt
+- 04_flat_shadow_drops_units_for_non_positive_values.txt
+- 05_jsdoc_type_formatter_uses_non_unique_placeholders.txt
+- 06_is_sys_color_matcher_assumes_specific_object_shape.txt
+- 07_download_llm_file_swallows_http_failures.txt
+- 08_changelog_contains_template_artifacts_and_empty_releases.txt
+- 09_sdtransformers_docs_out_of_sync_with_runtime.txt
+- 10_tokensjsons_docs_use_wrong_paths_and_schema.txt
+- 11_getting_started_omits_component_token_level.txt
+- 12_v3_migration_overview_contains_mismatched_asset_names_and_typos.txt
+
+Recommended filing order
+1. 01, 02, 03, 04
+2. 09, 10, 11, 12
+3. 05, 06, 07, 08
+
+Why this order
+- The first group affects engineering confidence, contributor success, and token output correctness.
+- The second group fixes user-facing and maintainer-facing documentation drift.
+- The third group contains important but slightly narrower edge-case or content-quality issues.
+
