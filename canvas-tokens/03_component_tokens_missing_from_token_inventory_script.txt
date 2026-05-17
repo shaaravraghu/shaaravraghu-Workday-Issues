@@ -1,0 +1,54 @@
+ISSUE TITLE
+`get-tokens-array.js` ignores the component token output even though component tokens are built and shipped
+
+ISSUE TYPE
+Build tooling defect
+
+PRIORITY
+High
+
+SUGGESTED LABELS
+infrastructure, tokens, bug
+
+AFFECTED FILES
+- scripts/utils/get-tokens-array.js:13-18
+- packages/canvas-tokens/build.ts:9-10, 25-27, 60-69, 94-97
+- packages/canvas-tokens/tokens/web/component.json:1-139
+
+SUMMARY
+The token inventory helper reads CSS variables for `base`, `brand`, and `system` only. It does not read the `component` token output, even though `component` is a first-class token level in the build config and has a real source file.
+
+WHY THIS MATTERS
+- Any script or process that relies on this inventory can silently miss component token changes.
+- That can affect change detection, release notes, migration tooling, or regression analysis.
+- The omission becomes more important as component-level tokens grow.
+
+EVIDENCE
+- `scripts/utils/get-tokens-array.js:13-18` collects only:
+  - `base`
+  - `brand`
+  - `system`
+- `packages/canvas-tokens/build.ts:10` includes `component` in the configured levels.
+- `packages/canvas-tokens/build.ts:25-27` and `60-69` include `component` in CSS and JS generation paths.
+- `packages/canvas-tokens/tokens/web/component.json` contains real component token definitions.
+
+REPRODUCTION
+1. Inspect `generateExistingTokens()` in `scripts/utils/get-tokens-array.js`.
+2. Compare it with the build configuration and component token source.
+3. Note that component tokens are built but never inventoried by this helper.
+
+EXPECTED RESULT
+If component tokens are part of the supported build output, shared inventory helpers should include them.
+
+ACTUAL RESULT
+The helper returns an incomplete token list.
+
+SUGGESTED FIX DIRECTION
+- Add `readAndExtractTokens('component')` to the helper, assuming the generated output path matches the build convention.
+- Audit any downstream callers to confirm they handle the expanded token set correctly.
+
+ACCEPTANCE CRITERIA
+- The helper includes component token CSS variables.
+- Downstream consumers are updated or verified to work with the expanded token inventory.
+- Tests cover the full set of supported token levels.
+
