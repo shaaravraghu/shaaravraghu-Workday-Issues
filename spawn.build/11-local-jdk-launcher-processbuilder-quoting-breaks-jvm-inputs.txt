@@ -1,0 +1,47 @@
+Title
+LocalJDKLauncher applies shell-style quoting to ProcessBuilder inputs and can corrupt JVM launch arguments
+
+Type
+Bug
+
+Severity
+High
+
+Modules
+- spawn-local-jdk
+- spawn-jdk
+
+Evidence
+- `spawn-local-jdk/src/main/java/build/spawn/platform/local/jdk/LocalJDKLauncher.java:93-98`
+- `LocalJDKLauncher.java:106-112`
+- `LocalJDKLauncher.java:173-184`
+- The launcher pre-quotes the executable, environment values, jar path, and application arguments before adding them to `ProcessBuilder`.
+
+Why this matters
+- JVM launches are especially sensitive to exact token contents.
+- Literal quotes can break `-jar` paths, application arguments, and environment-variable contents.
+- The same bug pattern exists here as in `LocalLauncher`, but it affects core JDK workflows.
+
+Expected behavior
+- JVM command elements should be added to `ProcessBuilder` without shell-escaping.
+
+Actual behavior
+- Spaced jar paths and arguments can be wrapped in literal quotes.
+
+Suggested reproduction
+1. Launch a JAR from a path containing spaces.
+2. Pass an application argument containing spaces.
+3. Inspect the received `args` or the file path seen by the child JVM.
+4. Observe embedded quote characters.
+
+Suggested fix
+- Remove `doubleQuoteIfContainsWhiteSpace(...)` from command construction.
+- Restrict quoting to human-readable diagnostics only.
+
+Suggested tests
+- Add a regression test for launching a JAR under a directory containing spaces.
+- Add a test verifying that an application receives `args` without embedded quotes.
+
+Issue body ready to paste
+`LocalJDKLauncher` feeds shell-quoted tokens into `ProcessBuilder` for the Java executable, environment values, JAR path, and arguments. Since `ProcessBuilder` does not perform shell parsing, those quotes can survive as literal characters and break JVM launch behavior when paths or values contain spaces.`
+
