@@ -1,0 +1,49 @@
+Issue Title
+CleanPlugin.delete() reports success even when recursive File.delete() calls fail
+
+Type
+Bug
+
+Priority
+High
+
+Component
+spin-clean-module
+
+Suggested Labels
+bug, clean, filesystem
+
+Affected Files
+- spin-modules/spin-clean-module/src/main/java/build/spin/module/clean/CleanPlugin.java
+
+Summary
+For directories, `CleanPlugin.delete()` walks the tree and calls `File.delete()` on each entry but ignores the returned boolean. The method then returns `true` even if some deletions failed.
+
+Evidence
+- Recursive delete uses `File::delete` at `CleanPlugin.java:62-66`.
+- The directory branch returns `true` unconditionally at `CleanPlugin.java:68`.
+
+Impact
+`clean` can appear successful while stale files remain on disk. That can poison later builds and make cleanup failures hard to diagnose.
+
+Reproduction Inputs
+1. Create a build directory containing a file that cannot be deleted cleanly.
+2. Invoke the clean task or call `CleanPlugin.delete(path)`.
+3. Inspect the directory contents afterward.
+
+Expected Result
+The clean path should fail fast or return `false` when any recursive delete fails.
+
+Actual Result
+The method can return success even when entries remain.
+
+Suggested Fix Direction
+- Check every `File.delete()` result.
+- Prefer `Files.delete(...)` with explicit error handling.
+- Surface which path failed so the caller can report actionable diagnostics.
+
+Required Inputs For Filing
+- Severity: High
+- User-facing symptom: stale build output after a seemingly successful clean
+- Code references: CleanPlugin.java:57-68
+- Regression risk: medium
