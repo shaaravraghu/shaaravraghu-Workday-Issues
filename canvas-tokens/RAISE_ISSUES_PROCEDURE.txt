@@ -1,0 +1,76 @@
+Purpose
+Use this file as the filing checklist for the issue drafts in `issue-drafts/`.
+
+Recommended process
+1. Review duplicates first.
+   - Open the repo issues page and search by the draft title and key nouns.
+   - If a similar issue already exists, add your evidence there instead of opening a duplicate.
+
+2. Start with the highest-signal drafts.
+   - File 01, 02, 03, and 04 first.
+   - Then file the documentation drift issues 09, 10, 11, and 12.
+   - File the medium-risk formatter/docs UX issues afterward.
+
+3. Use the draft contents directly.
+   - Copy `ISSUE TITLE` into the GitHub issue title.
+   - Copy the rest into the issue body.
+   - Keep `SUGGESTED LABELS` handy for manual label selection if the repo allows it.
+
+4. Match the repo contribution guidance.
+   - Communicate on issues before starting implementation.
+   - Ask whether the issue is already being worked on.
+   - If you plan to fix one, comment that you want to take it.
+
+Suggested GitHub issue body template
+Title:
+Use the `ISSUE TITLE` line from the chosen draft.
+
+Body:
+Summary
+Paste the `SUMMARY` section.
+
+Why this matters
+Paste the `WHY THIS MATTERS` section.
+
+Evidence
+Paste the `EVIDENCE` section.
+
+Steps to reproduce
+Paste the `REPRODUCTION` section.
+
+Expected result
+Paste the `EXPECTED RESULT` section.
+
+Actual result
+Paste the `ACTUAL RESULT` section.
+
+Suggested direction
+Paste the `SUGGESTED FIX DIRECTION` section.
+
+Acceptance criteria
+Paste the `ACCEPTANCE CRITERIA` section.
+
+Suggested filing order
+- 01_typecheck_ignores_typescript_sources.txt
+- 02_maintaining_guide_references_missing_sync_scripts.txt
+- 03_component_tokens_missing_from_token_inventory_script.txt
+- 04_flat_shadow_drops_units_for_non_positive_values.txt
+- 09_sdtransformers_docs_out_of_sync_with_runtime.txt
+- 10_tokensjsons_docs_use_wrong_paths_and_schema.txt
+- 11_getting_started_omits_component_token_level.txt
+- 12_v3_migration_overview_contains_mismatched_asset_names_and_typos.txt
+- 05_jsdoc_type_formatter_uses_non_unique_placeholders.txt
+- 06_is_sys_color_matcher_assumes_specific_object_shape.txt
+- 07_download_llm_file_swallows_http_failures.txt
+- 08_changelog_contains_template_artifacts_and_empty_releases.txt
+
+Quality checks before submitting each issue
+- Confirm the file paths and line references still match the current branch.
+- Remove any statement that assumes a runtime failure unless you reproduced it.
+- Keep the issue focused on one root problem.
+- Add screenshots only if a docs or Storybook issue benefits from them.
+- If the issue is documentation-only, say so in the title or body.
+
+Good comment to leave after filing
+"I reviewed the current repo state and attached file/line evidence. I have not opened a PR yet. Happy to help validate a fix if this issue is confirmed."
+
