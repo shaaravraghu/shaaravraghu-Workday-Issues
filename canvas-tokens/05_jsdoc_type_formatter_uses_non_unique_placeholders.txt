@@ -1,0 +1,49 @@
+ISSUE TITLE
+`formatJSToTypes` uses non-unique placeholder markers that can collide on repeated keys like `default` and `strong`
+
+ISSUE TYPE
+Formatter correctness risk
+
+PRIORITY
+Medium
+
+SUGGESTED LABELS
+bug, types, infrastructure
+
+AFFECTED FILES
+- packages/canvas-tokens/utils/formatters/formatTypes.ts:16-25, 77-105
+- packages/canvas-tokens/tokens/web/sys.json (many repeated keys such as `default`, `strong`, `stronger`)
+
+SUMMARY
+The type formatter builds content using placeholder tokens such as `**default**`, then replaces them with `String.replace()`. Because these placeholders are path-agnostic and reused across many branches, repeated key names can collide and be substituted in the wrong location.
+
+WHY THIS MATTERS
+- The system token tree heavily reuses common keys such as `default`, `strong`, `soft`, and `stronger`.
+- Placeholder collisions can generate malformed or misplaced declarations in the emitted `.d.ts` files.
+- The current approach is difficult to reason about and brittle as the token tree grows.
+
+EVIDENCE
+- `formatTypes.ts:16-18` creates placeholders from plain key names only.
+- `formatTypes.ts:22-24` uses `content.replace(pattern, newValue)`, which replaces the first matching occurrence.
+- `formatTypes.ts:93` and `105` repeatedly replace by bare key placeholder, not by full path.
+- The token source contains many repeated keys across branches, especially in `packages/canvas-tokens/tokens/web/sys.json`.
+
+REPRODUCTION
+1. Use a token tree with multiple sibling branches that each contain a `default` key.
+2. Run the type formatter.
+3. Observe that replacement is positional rather than path-aware, so a placeholder for one branch can satisfy another branch's pending replacement.
+
+EXPECTED RESULT
+Placeholder replacement in generated type files should be deterministic and path-specific.
+
+ACTUAL RESULT
+The current implementation relies on repeated bare placeholders that can collide.
+
+SUGGESTED FIX DIRECTION
+- Replace the placeholder strategy with direct recursive string assembly, or
+- Use unique path-based markers such as full token paths instead of plain key names.
+
+ACCEPTANCE CRITERIA
+- Generated `.d.ts` output is stable when identical key names appear in multiple branches.
+- Tests cover repeated keys like `default`, `strong`, and `soft` in separate subtrees.
+
