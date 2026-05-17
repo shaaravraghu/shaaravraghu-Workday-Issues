@@ -1,0 +1,31 @@
+Title: Several `TypeUsage` classes define equality without a matching `hashCode()`
+Category: Bug
+Priority: High
+Modules: `codemodel-foundation`
+Validation: Static analysis
+
+Summary:
+Several `TypeUsage` implementations override `equals(...)` but do not define `hashCode()`. This creates the same collection-contract problem seen in the descriptor layer.
+
+Evidence:
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/usage/AnnotationTypeUsage.java:126-134`
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/usage/GenericTypeUsage.java:142-154`
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/usage/SpecificTypeUsage.java:90-97`
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/usage/UnknownTypeUsage.java:95-98`
+
+Why this matters:
+`TypeUsage` objects are central model nodes and are natural candidates for caching, indexing, deduplication, and test assertions. Structural equality without structural hashing makes those operations unreliable.
+
+Expected behavior:
+Equal `TypeUsage` instances should produce equal hash codes.
+
+Actual behavior:
+These classes rely on identity-based hashing inherited from `Object`, even though equality is structural.
+
+Suggested confirmation steps:
+1. Create logically equal pairs of the affected usage types.
+2. Store them in `HashSet` or use them as `HashMap` keys.
+3. Compare the collection behavior with `equals(...)`.
+
+Suggested fix direction:
+Implement `hashCode()` in each affected class, matching the fields used by `equals(...)`.
