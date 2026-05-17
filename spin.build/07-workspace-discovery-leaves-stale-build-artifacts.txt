@@ -1,0 +1,49 @@
+Issue Title
+WorkspaceDiscovery does not clean previous build output between tests
+
+Type
+Bug
+
+Priority
+Medium
+
+Component
+spin-testing
+
+Suggested Labels
+bug, tests, isolation, build-output
+
+Affected Files
+- spin-testing/src/main/java/build/spin/testing/WorkspaceDiscovery.java
+
+Summary
+The testing extension creates a fresh engine per test, but it leaves prior build output in the workspace. The source already includes a TODO for cleanup, which means test results can be influenced by stale build artifacts.
+
+Evidence
+- The extension stores the workspace in `beforeEach()` and leaves a TODO to remove previous build output at `WorkspaceDiscovery.java:161-164`.
+- There is no cleanup logic before test execution in `WorkspaceDiscovery.java:111-165`.
+
+Impact
+Integration tests can become order-dependent, falsely green, or hard to debug because earlier build artifacts remain available to later runs.
+
+Reproduction Inputs
+1. Run an integration test that produces build output.
+2. Change the fixture so that a clean rebuild would behave differently.
+3. Re-run the test without manually deleting the build directory.
+4. Compare behavior with and without prior build artifacts present.
+
+Expected Result
+Each test should start from a clean workspace output state unless a test explicitly opts into reuse.
+
+Actual Result
+Previous build output can persist across tests.
+
+Suggested Fix Direction
+- Delete the workspace build directory during `beforeEach()`.
+- Or add an opt-in annotation for tests that want to preserve prior output.
+
+Required Inputs For Filing
+- Severity: Medium
+- User-facing symptom: flaky or misleading integration tests
+- Code references: WorkspaceDiscovery.java:111-165, especially 161-164
+- Regression risk: medium
