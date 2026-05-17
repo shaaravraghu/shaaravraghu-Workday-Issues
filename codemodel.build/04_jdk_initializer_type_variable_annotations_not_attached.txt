@@ -1,0 +1,31 @@
+Title: JdkInitializer resolves type variables without attaching collected type-use annotations
+Category: Bug
+Priority: Medium
+Modules: `jdk-codemodel`, `codemodel-foundation`
+Validation: Static analysis
+
+Summary:
+`JdkInitializer.buildTypeVisitor(...)` applies annotations for primitive, array, declared, and wildcard usages, but the `visitTypeVariable(...)` branch creates a `TypeVariableUsage` and stores it without copying annotation traits from `annotations.get(currentMirror)`.
+
+Evidence:
+- `jdk-codemodel/src/main/java/build/codemodel/jdk/JdkInitializer.java:885-893`
+- `...:903-910`
+- `...:914-929`
+- `...:940-958`
+
+Why this matters:
+The initializer is the source-based JDK path for constructing the model. If annotated type variables lose metadata here, source discovery and annotation-processor discovery can diverge.
+
+Expected behavior:
+Annotated type variables such as `@A T` should preserve the annotation traits in the resolved `TypeVariableUsage`.
+
+Actual behavior:
+The `visitTypeVariable(...)` branch constructs the usage and immediately stores it, with no `usage.addTrait(...)` loop.
+
+Suggested confirmation steps:
+1. Add a source fixture with an annotated type variable.
+2. Run `JdkInitializer`.
+3. Inspect the resulting `TypeVariableUsage` for `AnnotationTypeUsage` traits.
+
+Suggested fix direction:
+After constructing the `TypeVariableUsage`, apply `annotations.get(currentMirror).forEach(usage::addTrait)` before setting the lazy result.
