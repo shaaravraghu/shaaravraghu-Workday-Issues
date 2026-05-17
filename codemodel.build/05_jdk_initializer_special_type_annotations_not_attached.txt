@@ -1,0 +1,33 @@
+Title: JdkInitializer omits annotations for void, unknown, union, and intersection type usages
+Category: Bug
+Priority: Medium
+Modules: `jdk-codemodel`, `codemodel-foundation`
+Validation: Static analysis
+
+Summary:
+`JdkInitializer.buildTypeVisitor(...)` inconsistently applies pre-collected annotation traits. Several branches create special or composite `TypeUsage` objects without copying annotations onto them.
+
+Evidence:
+- `jdk-codemodel/src/main/java/build/codemodel/jdk/JdkInitializer.java:979-1007`
+- `visitNoType(...)` sets `VoidTypeUsage` directly.
+- `visitUnknown(...)` sets `UnknownTypeUsage` directly.
+- `visitUnion(...)` sets `UnionTypeUsage` directly.
+- `visitIntersection(...)` sets `IntersectionTypeUsage` directly.
+
+Likely impact:
+- Type-use metadata can be lost on special forms coming from source parsing.
+- The behavior is internally inconsistent because other branches in the same visitor do apply `annotations.get(currentMirror)`.
+
+Expected behavior:
+Any branch that turns a `TypeMirror` into a concrete `TypeUsage` should preserve the annotations already cached for that mirror.
+
+Actual behavior:
+Special/composite branches return unannotated usages.
+
+Suggested confirmation steps:
+1. Add source fixtures that exercise annotated special/composite usages where javac exposes those mirrors.
+2. Run `JdkInitializer`.
+3. Assert that the resulting `TypeUsage` objects retain the annotations.
+
+Suggested fix direction:
+Normalize all branches around the same pattern used by `visitPrimitive`, `visitArray`, `visitDeclared`, and `visitWildcard`.
