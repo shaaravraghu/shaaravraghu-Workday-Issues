@@ -1,0 +1,58 @@
+ISSUE TITLE
+v3 migration overview mixes unrelated asset names, contains typos, and references an invalid token name
+
+ISSUE TYPE
+Migration documentation bug
+
+PRIORITY
+Medium
+
+SUGGESTED LABELS
+documentation, migration, bug
+
+AFFECTED FILES
+- packages/canvas-tokens-docs/stories/migration/v3MigrationOverview.stories.mdx:25, 45-55, 114-124
+
+SUMMARY
+The v3 migration overview contains multiple quality issues:
+- It mentions an LLM file named `llm-canvas-kit-upgrade-guide-v14.txt`, but the actual download uses `llm-token-migration-3.0.0.txt`.
+- It says the file contains a "v14 Upgrade Guide" even though this page is a canvas-tokens v3 migration page.
+- It includes several spelling mistakes.
+- It references `sys.color.bg.transparen.default`, which looks like a misspelled token path.
+
+WHY THIS MATTERS
+- Migration guides need to be especially trustworthy because users follow them during breaking upgrades.
+- Mixed product names and bad filenames make the page look copy-pasted and potentially unsafe to trust.
+- A misspelled token path can create direct migration errors.
+
+EVIDENCE
+- `v3MigrationOverview.stories.mdx:45-49` mentions `llm-canvas-kit-upgrade-guide-v14.txt` and a "v14 Upgrade Guide".
+- `v3MigrationOverview.stories.mdx:64-66` actually downloads `llm-token-migration-3.0.0.txt`.
+- `v3MigrationOverview.stories.mdx:25` says `Depecation`.
+- `v3MigrationOverview.stories.mdx:54` says `deprected`.
+- `v3MigrationOverview.stories.mdx:115` references `sys.color.bg.transparen.default`.
+- `v3MigrationOverview.stories.mdx:124` says `compatability`.
+
+REPRODUCTION
+1. Read the v3 migration overview from top to bottom.
+2. Compare the textual LLM file description with the actual download component.
+3. Inspect the transparent token rename note.
+4. Observe the content mismatches and typos.
+
+EXPECTED RESULT
+Migration documentation should use the correct product names, asset names, token names, and spelling.
+
+ACTUAL RESULT
+The page currently mixes multiple inaccurate details.
+
+SUGGESTED FIX DIRECTION
+- Align the LLM asset description with the actual downloadable file.
+- Remove stray Canvas Kit React v14 wording unless it is intentionally cross-linking with clear context.
+- Correct the misspelled token path and spelling mistakes.
+- Do a focused copy review on the whole page.
+
+ACCEPTANCE CRITERIA
+- The page references the correct downloadable asset name.
+- The page no longer mixes unrelated guide naming.
+- The token examples are valid and spelling issues are resolved.
+
