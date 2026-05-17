@@ -1,0 +1,50 @@
+ISSUE TITLE
+Getting Started page still says there are only three token types and omits the component token level
+
+ISSUE TYPE
+Documentation accuracy bug
+
+PRIORITY
+Medium
+
+SUGGESTED LABELS
+documentation, onboarding, bug
+
+AFFECTED FILES
+- packages/canvas-tokens-docs/stories/GettingStarted.mdx:28-33
+- packages/canvas-tokens/build.ts:9-10, 25-27, 60-69
+- packages/canvas-tokens/tokens/web/component.json:1-139
+
+SUMMARY
+The Getting Started page says the package is organized into three token types: `base`, `brand`, and `system`. The current codebase and token sources include a real `component` token level that is built into CSS and JS outputs.
+
+WHY THIS MATTERS
+- New consumers and contributors get an incomplete model of the package.
+- It hides component-level tokens from teams that may need them.
+- It contributes to broader docs drift across the repo.
+
+EVIDENCE
+- `GettingStarted.mdx:28-33` explicitly lists only three token types.
+- `build.ts:10` includes `component` in the supported levels.
+- `build.ts:25-27` and `60-69` include `component` in CSS and JS generation.
+- `packages/canvas-tokens/tokens/web/component.json` contains actual component token data.
+
+REPRODUCTION
+1. Read the Getting Started overview.
+2. Compare it with the build configuration and token source files.
+3. Observe that `component` exists in the product but not in the onboarding explanation.
+
+EXPECTED RESULT
+The primary onboarding page should describe the currently supported token levels accurately.
+
+ACTUAL RESULT
+The page still presents an older three-level model.
+
+SUGGESTED FIX DIRECTION
+- Update the overview to include `component`.
+- Clarify when consumers should use component tokens versus system tokens.
+
+ACCEPTANCE CRITERIA
+- The Getting Started page reflects the current supported token levels.
+- The explanation helps readers understand where component tokens fit in the hierarchy.
+
