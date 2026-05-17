@@ -1,0 +1,36 @@
+Type: Bug Report
+Title: [Bug]: Preflight checks only lint `src/` and skip `cli/src/**`
+Labels: bug
+
+What happened?
+The repository's main `just check` target only runs `npx eslint src/`, so CLI source files under `cli/src/**` are not covered by ESLint during normal preflight checks.
+
+Steps to Reproduce
+1. Open `.justfile`.
+2. Inspect the `check` target.
+3. Notice that it runs `npx prettier --check .`, `npx tsc --noEmit`, and `npx eslint src/`.
+4. Compare that with the repository layout, which contains a separate CLI codebase under `cli/src/**`.
+
+What did you expect to happen?
+I expected preflight checks to lint both the SDK source and the CLI source before changes are merged.
+
+What actually happened?
+Only `src/` is linted. `cli/.justfile` also only runs `npx tsc --noEmit`, so there is no CLI ESLint coverage from the documented command path.
+
+Screenshots or Logs
+Relevant lines:
+- `.justfile:12-16`
+- `cli/.justfile:9-13`
+
+Environment Information
+- Node.js version: not executed during this review
+- SDK version: `0.2.2`
+- Operating System: macOS
+- Package manager: npm
+
+Additional Context
+This is a repo maintenance gap rather than a single runtime failure, but it means new CLI lint regressions can land without CI catching them.
+
+How often does this happen?
+Every time
+
