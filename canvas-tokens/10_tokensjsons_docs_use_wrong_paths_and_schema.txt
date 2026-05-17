@@ -1,0 +1,55 @@
+ISSUE TITLE
+Token JSON structure docs use outdated deprecated-token paths and schema fields
+
+ISSUE TYPE
+Documentation drift
+
+PRIORITY
+High
+
+SUGGESTED LABELS
+documentation, tokens, bug
+
+AFFECTED FILES
+- packages/canvas-tokens-docs/stories/TokensJSONs.mdx:24-45, 134-168
+- packages/canvas-tokens/tokens/deprecated/base.json
+- packages/canvas-tokens/tokens/deprecated/web/brand.json
+- packages/canvas-tokens/tokens/deprecated/web/sys.json
+- packages/canvas-tokens/tokens/web/component.json
+
+SUMMARY
+The token JSON structure docs describe old deprecated-token paths and an old schema centered on `fallback`. The current repo layout uses `tokens/deprecated/...`, and current token files use `deprecatedValues`.
+
+WHY THIS MATTERS
+- The page is intended as source-of-truth documentation for repo structure.
+- Incorrect paths waste maintainer time and mislead external contributors.
+- The schema mismatch makes it harder to understand the actual fallback/deprecation pipeline.
+
+EVIDENCE
+- `TokensJSONs.mdx:25-26` says the repo has only `base`, `brand`, and `sys` levels.
+- `TokensJSONs.mdx:41-43` documents deprecated paths under `tokens/web/deprecated/...`, but the repo uses `tokens/deprecated/...`.
+- `TokensJSONs.mdx:134-147` describes `fallback` as the deprecation field.
+- `TokensJSONs.mdx:153-164` uses a `fallback` example.
+- Current token files, such as `packages/canvas-tokens/tokens/web/component.json`, use `deprecatedValues`.
+
+REPRODUCTION
+1. Compare the file organization table in `TokensJSONs.mdx` with the actual repo paths.
+2. Compare the deprecated-token example with current token JSON files.
+3. Observe that both the locations and the schema are stale.
+
+EXPECTED RESULT
+The JSON structure docs should match the current repo layout and current token schema.
+
+ACTUAL RESULT
+The page documents legacy locations and fields.
+
+SUGGESTED FIX DIRECTION
+- Update the file organization table to current paths.
+- Document `component` as a real token level if appropriate.
+- Replace `fallback` examples with `deprecatedValues` examples and explain how they are consumed.
+
+ACCEPTANCE CRITERIA
+- Every documented path exists in the current repo.
+- Deprecated token examples use the current field names.
+- The page covers the current token levels and deprecation model accurately.
+
