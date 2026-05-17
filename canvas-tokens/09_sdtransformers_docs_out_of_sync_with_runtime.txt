@@ -1,0 +1,53 @@
+ISSUE TITLE
+Style Dictionary transformer docs no longer match the actual transformer names and behavior
+
+ISSUE TYPE
+Documentation drift
+
+PRIORITY
+High
+
+SUGGESTED LABELS
+documentation, infrastructure, bug
+
+AFFECTED FILES
+- packages/canvas-tokens-docs/stories/SDTransformers.mdx:14-15, 43-47, 85-116
+- packages/canvas-tokens/utils/transformers/index.ts:15-22, 77-88
+- packages/canvas-tokens/utils/filters/index.ts:74-76, 89-90
+
+SUMMARY
+The transformer documentation is stale. It still documents `value/deprecated` and `fallback`, while the runtime code now uses `value/deprecated-values` and `deprecatedValues`. It also says breakpoint conversion applies to `base.breakpoints.*`, but the actual matcher targets `sys.breakpoints`.
+
+WHY THIS MATTERS
+- Maintainers and contributors can implement changes against the wrong mental model.
+- The docs currently disagree with the code in multiple places, which increases review friction.
+- This page appears intended as internal reference documentation, so accuracy matters.
+
+EVIDENCE
+- `SDTransformers.mdx:15` and `43-47` refer to `value/deprecated`.
+- `SDTransformers.mdx:91` says breakpoints apply to `base.breakpoints.*`.
+- `SDTransformers.mdx:110-116` describes fallback-field behavior that does not match the current implementation.
+- `transformers/index.ts:17` registers `value/deprecated-values`, not `value/deprecated`.
+- `filters/index.ts:74-76` matches `sys.breakpoints`, not base breakpoints.
+- `filters/index.ts:89-90` and current token data use `deprecatedValues`, not `fallback`.
+
+REPRODUCTION
+1. Read the docs page for transformers.
+2. Compare it with the transformer registry and matchers in `packages/canvas-tokens/utils`.
+3. Observe the naming and behavior mismatch.
+
+EXPECTED RESULT
+Internal docs should accurately reflect the transformer registry and current token schema.
+
+ACTUAL RESULT
+The docs describe a previous implementation.
+
+SUGGESTED FIX DIRECTION
+- Update the doc page to the current transformer names and matcher behavior.
+- Align examples with `deprecatedValues`.
+- Add a quick doc-review step whenever transformer APIs change.
+
+ACCEPTANCE CRITERIA
+- The docs match the current runtime names, fields, and token levels.
+- All examples in the page are valid against the current codebase.
+
