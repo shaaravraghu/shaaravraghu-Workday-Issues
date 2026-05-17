@@ -1,0 +1,52 @@
+Issue Title
+version.properties is loaded by ProjectModuleVersioning but not wired into runtime engine behavior
+
+Type
+Bug / missing integration
+
+Priority
+Medium
+
+Component
+spin-module-system-module, spin-engine
+
+Suggested Labels
+bug, versioning, runtime, module-system
+
+Affected Files
+- spin-modules/spin-module-system-module/src/main/java/build/spin/module/modulesystem/ProjectModuleVersioning.java
+- spin-engine/src/main/java/build/spin/engine/DefaultEngine.java
+- docs/CODEBASE_MAP.md
+
+Summary
+The repository has a `ProjectModuleVersioning` resource that reads `version.properties`, but the runtime engine path does not wire that data into the main program configuration. The architecture document already calls this out as an active gap.
+
+Evidence
+- `ProjectModuleVersioning` reads and caches entries from `version.properties` at `ProjectModuleVersioning.java:88-120`.
+- `DefaultEngine` bootstraps services, meta-classes, and extensions, but the startup path shown in `DefaultEngine.java:221-257` does not inject `version.properties` into top-level runtime options.
+- The architecture note explicitly states the gap at `docs/CODEBASE_MAP.md:695`.
+
+Impact
+Developers can maintain `version.properties` and reasonably expect runtime behavior to respect it, but the engine does not fully honor that expectation. This can cause confusion, inconsistent dependency resolution, and configuration drift.
+
+Reproduction Inputs
+1. Add or update a `version.properties` file in a workspace.
+2. Start spin through the normal runtime path.
+3. Compare expected version-aware behavior with the actual runtime configuration used by the engine.
+
+Expected Result
+Runtime program creation should consistently consume the version mapping that the repository already loads.
+
+Actual Result
+The version mapping exists as a resource, but runtime engine behavior is not fully wired to it.
+
+Suggested Fix Direction
+- Define the exact runtime contract for `version.properties`.
+- Inject the resolved version map where task and dependency resolution expect it.
+- Add an integration test that proves runtime use instead of just resource loading.
+
+Required Inputs For Filing
+- Severity: Medium
+- User-facing symptom: version.properties appears supported but does not fully affect runtime behavior
+- Code references: ProjectModuleVersioning.java:88-120, DefaultEngine.java:221-257, docs/CODEBASE_MAP.md:695
+- Regression risk: medium
