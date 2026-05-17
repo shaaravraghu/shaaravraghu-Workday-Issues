@@ -1,0 +1,44 @@
+Title
+ApplicationStream.relaunch() shuts applications down and then returns no replacements
+
+Type
+Bug
+
+Severity
+Critical
+
+Modules
+- spawn-application-composition
+
+Evidence
+- `spawn-application-composition/src/main/java/build/spawn/application/composition/Composition.java:323-324`
+- `relaunch(...)` is implemented as `shutdown().clone(options)`.
+- `clone(...)` is currently non-functional because its launch path is commented out at `Composition.java:351-364`.
+
+Why this matters
+- `relaunch()` is more dangerous than `clone()` because it first terminates the original applications.
+- A caller expecting a restart can end up with downtime and no restarted applications.
+
+Expected behavior
+- Relaunch should replace each shut-down application with a new instance.
+
+Actual behavior
+- Original applications are shut down.
+- The follow-up clone call produces no replacements.
+
+Suggested reproduction
+1. Launch a composition with a live application.
+2. Call `relaunch()`.
+3. Observe that the original app is shut down and the returned stream is empty.
+
+Suggested fix
+- Do not delegate `relaunch()` to `clone()` until cloning is implemented correctly.
+- Either implement full relaunch semantics directly or throw an explicit unsupported-operation exception.
+
+Suggested tests
+- Add a regression test asserting that `relaunch()` preserves application count.
+- Add a failure-mode test proving originals are not destroyed when relaunch cannot proceed.
+
+Issue body ready to paste
+`ApplicationStream.relaunch(...)` currently delegates to `shutdown().clone(options)`, but `clone(...)` is not implemented. In practice this means `relaunch()` can shut down the original applications and return no replacements, which is a much more severe failure than a simple no-op.`
+
