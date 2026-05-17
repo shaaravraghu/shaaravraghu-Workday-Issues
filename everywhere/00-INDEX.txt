@@ -1,0 +1,38 @@
+Workday Everywhere issue draft index
+
+Analysis date: 2026-05-16
+Analysis scope: SDK runtime, CLI commands, GitHub workflows, issue templates, README, CONTRIBUTING
+Method: static code and documentation review across the repository
+Note: dependencies were not installed during this pass, so findings are based on source inspection rather than executing the full test suite
+
+Drafts included:
+
+01. Feature: pin third-party GitHub Actions to commit SHAs
+02. Feature: reduce release workflow permissions to least privilege
+03. Bug: preflight checks do not lint CLI source files
+04. Bug: GraphQLResolver.findOne fetches whole collections client-side
+05. Bug: GraphQLResolver omits SINGLE_INSTANCE and MULTI_INSTANCE fields
+06. Bug: auth login echoes access tokens in the terminal
+07. Bug: unpublish breaks for scoped package names
+08. Bug: install command overwrites versioned archives
+09. Bug: README build command uses the wrong npx invocation
+10. Bug: README documents the wrong GraphQL proxy endpoint
+11. Bug: README hook example uses Text without importing or defining it
+12. Bug: CONTRIBUTING points to a nonexistent sdk subdirectory
+13. Bug: published CLI metadata drifts from root package version and license
+14. Bug: issue template placeholders use the wrong command example
+
+Suggested filing order:
+
+1. 04 and 05
+These are the highest-impact runtime/data issues.
+
+2. 06 and 07
+These affect security hygiene and real-world publish lifecycle behavior.
+
+3. 01, 02, and 03
+These improve repository safety and CI coverage.
+
+4. 09 through 14
+These are onboarding and documentation quality fixes that are quick to file and triage.
+
