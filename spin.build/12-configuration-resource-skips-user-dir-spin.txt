@@ -1,0 +1,48 @@
+Issue Title
+ConfigurationResource does not include the current user.dir .spin path in configuration lookup
+
+Type
+Bug / configuration gap
+
+Priority
+Low to Medium
+
+Component
+spin-configuration-module
+
+Suggested Labels
+bug, configuration, developer-experience
+
+Affected Files
+- spin-modules/spin-configuration-module/src/main/java/build/spin/module/configuration/ConfigurationResource.java
+
+Summary
+Configuration lookup walks project and parent `.spin/` directories, but it does not include a `.spin/` directory rooted at `user.dir`. The source already marks this as an unresolved TODO.
+
+Evidence
+- The TODO is explicit at `ConfigurationResource.java:96`.
+- The lookup path only adds `prj.path().resolve(Configuration.DIRECTORY)` while walking the project hierarchy at `ConfigurationResource.java:98-103`.
+
+Impact
+Users launching spin from a working directory that is not identical to the discovered project path can miss expected local configuration overrides.
+
+Reproduction Inputs
+1. Launch spin from a directory with its own `.spin/` config.
+2. Use a project whose discovered hierarchy does not include that directory.
+3. Compare expected config resolution with the effective config.
+
+Expected Result
+The intended current-working-directory configuration should be available when that behavior is part of the CLI contract.
+
+Actual Result
+Only project and parent project `.spin/` directories are searched.
+
+Suggested Fix Direction
+- Decide whether `user.dir/.spin` belongs in the runtime precedence model.
+- If yes, add it explicitly and document the precedence order.
+
+Required Inputs For Filing
+- Severity: Low to Medium
+- User-facing symptom: local working-directory config is ignored
+- Code references: ConfigurationResource.java:96-103
+- Regression risk: low
