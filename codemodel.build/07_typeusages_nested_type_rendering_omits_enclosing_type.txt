@@ -1,0 +1,29 @@
+Title: `TypeUsages.getJDKTypeName(...)` can omit enclosing type names for nested classes
+Category: Bug
+Priority: Medium
+Modules: `jdk-codemodel`
+Validation: Static analysis
+
+Summary:
+`TypeUsages.getJDKTypeName(...)` contains explicit TODO comments noting that the enclosing type name is not included in some render paths. For nested classes in `java.lang` or in the same namespace, the method can return only the simple name.
+
+Evidence:
+- `jdk-codemodel/src/main/java/build/codemodel/jdk/TypeUsages.java:110-123`
+- TODOs at lines 115 and 122: `include the enclosing typename if one is defined?`
+
+Why this matters:
+If a nested type is rendered as `Inner` instead of `Outer.Inner`, generated or formatted source can become ambiguous or invalid.
+
+Expected behavior:
+When a `TypeName` has an `enclosingTypeName()`, the rendered source name should retain the nested structure whenever required by Java syntax.
+
+Actual behavior:
+Certain fast paths return `typeName.name().toString()` directly, ignoring enclosing-type context.
+
+Suggested confirmation steps:
+1. Create a `TypeName` for a nested type such as `com.example.Outer$Inner`.
+2. Exercise `getJDKTypeName(...)` for same-namespace and `java.lang` style paths.
+3. Verify whether the output drops `Outer.`.
+
+Suggested fix direction:
+Build the rendered short name from the enclosing type chain, not only the leaf `name()`, when an enclosing type is present.
