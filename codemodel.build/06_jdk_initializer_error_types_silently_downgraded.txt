@@ -1,0 +1,33 @@
+Title: JdkInitializer converts `ErrorType` to `UnknownTypeUsage` without recording a diagnostic
+Category: Bug
+Priority: Medium
+Modules: `jdk-codemodel`
+Validation: Static analysis
+
+Summary:
+When `JdkInitializer` encounters `ErrorType`, it silently maps the result to `UnknownTypeUsage`. Unlike the annotation-processor path, it does not record a user-visible diagnostic about the missing or unresolved type.
+
+Evidence:
+- `jdk-codemodel/src/main/java/build/codemodel/jdk/JdkInitializer.java:933-937`
+- Compare with `jdk-annotation-processor/src/main/java/build/codemodel/annotation/processing/AnnotationProcessor.java:684-692`, which explicitly records an error.
+
+Likely impact:
+- Missing classpath entries or broken source references can be masked.
+- Consumers may see degraded model fidelity without any hint about the underlying source-resolution problem.
+- The source-based JDK initializer and annotation-processor path expose different failure semantics for the same condition.
+
+Expected behavior:
+Missing or unresolved types should either:
+- produce a diagnostic that can be surfaced to the caller, or
+- be explicitly documented and observable as a degraded-resolution event.
+
+Actual behavior:
+The initializer silently degrades the model to `UnknownTypeUsage`.
+
+Suggested confirmation steps:
+1. Add a source fixture referencing a missing type.
+2. Run `JdkInitializer`.
+3. Compare the outcome with annotation-processor behavior for the same source.
+
+Suggested fix direction:
+Introduce a recorder/reporting hook for `JdkInitializer`, or return structured resolution warnings alongside the model.
