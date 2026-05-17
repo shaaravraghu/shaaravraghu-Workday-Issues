@@ -1,0 +1,30 @@
+Title: `BindingBuilder` advertises operations that fail only at runtime with `UnsupportedOperationException`
+Category: API Design / Bug
+Priority: Medium
+Modules: `dependency-injection`
+Validation: Static analysis
+
+Summary:
+The `BindingBuilder` interface exposes default methods such as `toOverriding(...)` and `asAllInterfaces(...)`, but the base implementation is to throw `UnsupportedOperationException`. This makes unsupported capabilities discoverable only at runtime.
+
+Evidence:
+- `dependency-injection/src/main/java/build/codemodel/injection/BindingBuilder.java:109-163`
+
+Why this matters:
+- IDE auto-complete suggests these methods are generally safe to call.
+- Callers have to know hidden construction constraints like "created via `Context.bind(Object)`" instead of relying on type-safe API boundaries.
+- Runtime failures are more expensive than compile-time guidance for a DI configuration API.
+
+Expected behavior:
+Unsupported operations should be represented by narrower builder types or capability-specific interfaces, so invalid calls are impossible or at least obvious at compile time.
+
+Actual behavior:
+The interface surface is broad, but support is partial and enforced only by runtime exceptions.
+
+Suggested confirmation steps:
+1. Inspect the different builder creation paths.
+2. Call the default-only methods on a builder type that does not override them.
+3. Observe the runtime `UnsupportedOperationException`.
+
+Suggested fix direction:
+Split the API into capability-specific subinterfaces, or return builder implementations whose exposed type matches the supported operation set.
