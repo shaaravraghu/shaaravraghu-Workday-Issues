@@ -1,0 +1,59 @@
+Title
+`Connection` silently drops publish events when serialization fails
+
+Issue type
+Reliability bug
+
+Severity
+Medium
+
+Priority
+P2
+
+Affected modules
+`base-network`
+
+Affected files
+`base-network/src/main/java/build/base/network/Connection.java`
+
+Verification status
+Source inspection
+
+Problem summary
+If serialization fails inside the publish path, `Connection` catches the `IOException` and does nothing. The caller gets no exception, no failed future, and no subscriber signal, so the event is simply lost.
+
+Evidence
+The publish path serializes message data at lines 214-221.
+If that serialization throws `IOException`, the catch block at lines 232-234 intentionally ignores it.
+
+Relevant references
+`base-network/src/main/java/build/base/network/Connection.java:214`
+`base-network/src/main/java/build/base/network/Connection.java:232`
+
+Why this matters
+Silent data loss is hard to diagnose.
+Even if the API chooses not to make serialization failure fatal for the whole connection, callers still need some observable failure mode.
+
+Reproduction steps
+1. Inspect `Connection.createProducer`.
+2. Follow the `ObjectOutputStream` serialization path.
+3. Note that serialization `IOException` is caught and ignored without logging or surfacing an error.
+
+Expected result
+Publish failures should be visible to the caller or at least logged and correlated to the producer.
+
+Actual result
+Serialization errors on publish are swallowed and the message is dropped silently.
+
+Suggested fix direction
+At minimum, log the failure and mark the producer failed.
+Prefer surfacing the failure to the caller through an exception or an error-reporting callback.
+
+Acceptance criteria
+Serialization failures on publish are observable and covered by tests.
+The implementation no longer drops publish events silently.
+
+Suggested labels
+`bug`
+`network`
+`reliability`
