@@ -1,0 +1,49 @@
+Issue Title
+AbstractDetectSourceFiles silently swallows filesystem walk failures
+
+Type
+Bug
+
+Priority
+Low to Medium
+
+Component
+spin-java-module
+
+Suggested Labels
+bug, source-discovery, diagnostics
+
+Affected Files
+- spin-modules/spin-java-module/src/main/java/build/spin/module/java/AbstractDetectSourceFiles.java
+
+Summary
+When walking a source path fails, the detector catches `IOException` and does nothing. The caller receives a partial or empty result without any diagnostic signal.
+
+Evidence
+- The walk failure is swallowed at `AbstractDetectSourceFiles.java:71-73`.
+- The method then returns the accumulated `PathSet` at `AbstractDetectSourceFiles.java:76`.
+
+Impact
+Source discovery problems can silently degrade into incomplete compilation inputs, making root-cause analysis much harder.
+
+Reproduction Inputs
+1. Provide a source path that exists but cannot be walked successfully.
+2. Run source discovery.
+3. Compare the returned `PathSet` with the expected source tree.
+
+Expected Result
+The detector should emit a diagnostic or fail in a controlled way when a source root cannot be walked.
+
+Actual Result
+The failure is ignored and the method returns whatever partial set it collected.
+
+Suggested Fix Direction
+- Log the failing path and exception.
+- Decide whether source-root walk failure should be fatal or warning-level.
+- Add a regression test that verifies the chosen behavior.
+
+Required Inputs For Filing
+- Severity: Low to Medium
+- User-facing symptom: silent partial source discovery
+- Code references: AbstractDetectSourceFiles.java:57-73 and 76
+- Regression risk: low
