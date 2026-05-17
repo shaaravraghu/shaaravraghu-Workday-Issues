@@ -1,0 +1,65 @@
+Title
+`base-network` `Connection` mixes virtual threads with `synchronized` entry points and risks carrier-thread pinning
+
+Issue type
+Performance bug
+
+Severity
+High
+
+Priority
+P1
+
+Affected modules
+`base-network`
+
+Affected files
+`base-network/src/main/java/build/base/network/Connection.java`
+
+Verification status
+Source inspection
+
+Problem summary
+`Connection` starts work on virtual threads, but key API methods are synchronized instance methods. That combination can pin carrier threads on affected JDKs and reduces the throughput benefit of virtual-thread-based I/O.
+
+Evidence
+Virtual threads are created at lines 160-162 and 344-346.
+Synchronized methods appear at lines 156, 181, 254, 475, 539, and 593.
+The nested producer implementation also synchronizes `publish` at line 197.
+
+Relevant references
+`base-network/src/main/java/build/base/network/Connection.java:156`
+`base-network/src/main/java/build/base/network/Connection.java:160`
+`base-network/src/main/java/build/base/network/Connection.java:181`
+`base-network/src/main/java/build/base/network/Connection.java:197`
+`base-network/src/main/java/build/base/network/Connection.java:344`
+`base-network/src/main/java/build/base/network/Connection.java:475`
+
+Why this matters
+The implementation clearly intends to benefit from virtual threads, but coarse synchronization can serialize hot paths and pin carriers when blocking occurs inside monitor regions.
+That creates a mismatch between the concurrency model and the locking strategy.
+
+Reproduction steps
+1. Inspect `Connection.start()` and `Connection.handleOperation()` to see virtual threads created for request handling.
+2. Inspect public methods and nested producer code to see synchronized monitors protecting those paths.
+3. Compare this with recommended lock strategies for virtual-thread-heavy code.
+
+Expected result
+The network layer should use lock strategies that preserve virtual-thread scalability, such as narrower critical sections or explicit locks where appropriate.
+
+Actual result
+The implementation relies on object monitors around several connection operations even though the runtime model uses virtual threads.
+
+Suggested fix direction
+Replace coarse `synchronized` methods with narrower coordination, preferably via `ReentrantLock`, atomic state, or targeted concurrent data structure operations.
+Revisit whether each method needs whole-method exclusion.
+
+Acceptance criteria
+Hot-path connection methods no longer rely on whole-method synchronization.
+Load tests or concurrency-focused tests confirm that request handling and publish paths remain correct under parallel use.
+
+Suggested labels
+`bug`
+`performance`
+`virtual-threads`
+`network`
