@@ -1,0 +1,51 @@
+Repository: Workday-Spin.Build-Issues
+Analysis date: 2026-05-17
+Analyst: Codex
+
+Scope
+- Reviewed repository structure, architecture docs, and implementation hotspots across API, engine, testing, and module packages.
+- Prioritized issues that are directly supported by source code evidence instead of broad product suggestions.
+- Collected 13 issue-ready findings plus one filing procedure document.
+
+What was analyzed
+- Core lifecycle APIs: Workspace, Project, Engine, Program
+- Background processors: server and daemon implementations
+- Testing support utilities
+- Configuration and versioning resources
+- Maven, Java, JUnit, console, clean, and language-server modules
+- Architecture notes in docs/CODEBASE_MAP.md
+
+Issue files in this folder
+- 01-language-server-main-bypasses-di.txt
+- 02-workspace-close-skips-auto-closeable-resources.txt
+- 03-workspace-close-aborts-on-first-close-failure.txt
+- 04-version-properties-not-wired-into-runtime-engine.txt
+- 05-workspace-console-schema-is-placeholder.txt
+- 06-workspace-console-hardcodes-network-config.txt
+- 07-workspace-discovery-leaves-stale-build-artifacts.txt
+- 08-clean-plugin-delete-masks-recursive-delete-failures.txt
+- 09-maven-packaging-swallows-archive-input-io-errors.txt
+- 10-junit-test-task-returns-empty-output-pathset.txt
+- 11-customization-plugin-drops-resolved-module-version.txt
+- 12-configuration-resource-skips-user-dir-spin.txt
+- 13-source-file-discovery-swallows-filesystem-errors.txt
+
+Suggested priority order
+1. 01-language-server-main-bypasses-di.txt
+2. 02-workspace-close-skips-auto-closeable-resources.txt
+3. 03-workspace-close-aborts-on-first-close-failure.txt
+4. 08-clean-plugin-delete-masks-recursive-delete-failures.txt
+5. 10-junit-test-task-returns-empty-output-pathset.txt
+6. 11-customization-plugin-drops-resolved-module-version.txt
+7. 09-maven-packaging-swallows-archive-input-io-errors.txt
+8. 07-workspace-discovery-leaves-stale-build-artifacts.txt
+9. 04-version-properties-not-wired-into-runtime-engine.txt
+10. 06-workspace-console-hardcodes-network-config.txt
+11. 05-workspace-console-schema-is-placeholder.txt
+12. 12-configuration-resource-skips-user-dir-spin.txt
+13. 13-source-file-discovery-swallows-filesystem-errors.txt
+
+Notes
+- Findings 05 and 04 are also acknowledged by the repository documentation, so they are especially safe to raise.
+- Findings 01, 02, 03, 08, 09, 10, and 11 are source-level defects with clear behavioral impact.
+- I did not modify production code in this pass; this folder is a filing package for maintainers or contributors.
