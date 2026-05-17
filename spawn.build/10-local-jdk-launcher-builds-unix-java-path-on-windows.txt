@@ -1,0 +1,42 @@
+Title
+LocalJDKLauncher hard-codes `/bin/java` and does not build a Windows Java executable path
+
+Type
+Bug
+
+Severity
+High
+
+Modules
+- spawn-local-jdk
+
+Evidence
+- `spawn-local-jdk/src/main/java/build/spawn/platform/local/jdk/LocalJDKLauncher.java:75-78`
+- `getExecutable(...)` returns `Executable.of(options.get(JDKHome.class).get() + "/bin/java")`.
+
+Why this matters
+- The project includes Windows-aware JDK detection logic, so local JDK launching appears intended to be cross-platform.
+- A hard-coded Unix-style executable path breaks Windows usage where the binary is typically `bin\\java.exe`.
+
+Expected behavior
+- The Java executable path should be constructed with platform-aware path resolution.
+
+Actual behavior
+- The launcher always concatenates a Unix-style suffix.
+
+Suggested reproduction
+1. Resolve a Windows `JDKHome`.
+2. Launch a `JDKApplication` through `LocalJDKLauncher`.
+3. Observe that the executable path points to `/bin/java` rather than `bin\\java.exe`.
+
+Suggested fix
+- Build the executable path with `Path.resolve(...)`.
+- Append `java.exe` on Windows and `java` elsewhere, or rely on `ProcessBuilder` with the resolved `Path`.
+
+Suggested tests
+- Add an OS-specific unit test for executable resolution on Windows.
+- Add a cross-platform test that asserts the executable path is normalized from `JDKHome`.
+
+Issue body ready to paste
+`LocalJDKLauncher.getExecutable(...)` hard-codes the Java binary as `JDKHome + "/bin/java"`. That works on Unix-like systems but breaks Windows launches, even though the surrounding module already contains Windows-aware JDK detection logic.`
+
