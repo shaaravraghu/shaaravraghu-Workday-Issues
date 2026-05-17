@@ -1,0 +1,44 @@
+Title
+LocalLauncher adds shell-style quoting before ProcessBuilder and can pass literal quotes to child processes
+
+Type
+Bug
+
+Severity
+High
+
+Modules
+- spawn-local-platform
+
+Evidence
+- `spawn-local-platform/src/main/java/build/spawn/platform/local/LocalLauncher.java:59-60`
+- `LocalLauncher.java:67-79`
+- The launcher applies `Strings.doubleQuoteIfContainsWhiteSpace(...)` to the executable, environment values, and Java arguments before passing them to `ProcessBuilder`.
+
+Why this matters
+- `ProcessBuilder` does not expect shell-escaped tokens.
+- Each command element is already passed as an isolated argument.
+- Pre-quoting inserts literal `"` characters into the child process view of the command or environment.
+
+Expected behavior
+- Raw executable paths, environment values, and argument strings should be passed directly to `ProcessBuilder`.
+
+Actual behavior
+- Paths and values that contain spaces can be handed to the child process with embedded quotes.
+
+Suggested reproduction
+1. Launch a local process whose executable path contains spaces, or pass a Java argument containing spaces.
+2. Inspect the child process arguments.
+3. Observe that the quotes are preserved literally instead of being treated as shell syntax.
+
+Suggested fix
+- Remove shell-style quoting from `ProcessBuilder` inputs.
+- Keep quoting only for diagnostics/log rendering if desired.
+
+Suggested tests
+- Add a regression test launching a binary from a path that contains spaces.
+- Add a test proving an environment variable with spaces is received without extra quotes.
+
+Issue body ready to paste
+`LocalLauncher` uses `Strings.doubleQuoteIfContainsWhiteSpace(...)` before handing tokens to `ProcessBuilder`. Because `ProcessBuilder` already handles argument boundaries, those quotes become literal characters in the child process command or environment, which can break launches when paths or values contain spaces.`
+
