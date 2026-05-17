@@ -1,0 +1,48 @@
+ISSUE TITLE
+`flatShadow` emits unitless values for zero and negative shadow offsets/spreads
+
+ISSUE TYPE
+Token build bug
+
+PRIORITY
+High
+
+SUGGESTED LABELS
+bug, tokens, css-output
+
+AFFECTED FILES
+- packages/canvas-tokens/utils/transformers/flatShadow.ts:4-22, 30-42
+
+SUMMARY
+The internal `transformNumber()` helper in `flatShadow.ts` appends `rem` only when the computed value is greater than zero. Zero and negative values are returned without units, which can generate invalid or inconsistent CSS shadow strings.
+
+WHY THIS MATTERS
+- Shadow tokens frequently use zero and can legitimately use negative offsets.
+- Unitless negative or zero dimensions are inconsistent with the rest of the generated shadow string.
+- This can create invalid CSS or confusing output for downstream consumers.
+
+EVIDENCE
+- `flatShadow.ts:19-21` computes a rem-scaled value and then returns:
+  - `pxValue + 'rem'` only when `pxValue > 0`
+  - raw `pxValue` otherwise
+
+REPRODUCTION
+1. Pass a shadow segment with `x: "-4"` or `spread: "-2"` through `flatShadow`.
+2. Observe that the returned string will contain unitless negative numeric values instead of `-0.25rem`, `-0.125rem`, etc.
+3. The same logic also returns bare numeric `0` instead of `0rem`.
+
+EXPECTED RESULT
+Converted shadow dimensions should preserve units for positive, zero, and negative values.
+
+ACTUAL RESULT
+Only positive values keep the `rem` suffix.
+
+SUGGESTED FIX DIRECTION
+- Return `0rem` and negative `rem` values consistently after unit conversion.
+- Add tests for negative and zero shadow dimensions.
+
+ACCEPTANCE CRITERIA
+- Negative shadow offsets/spreads are emitted with `rem` units.
+- Zero values are emitted consistently as valid CSS dimensions.
+- Unit tests cover positive, zero, negative, and math-expression inputs.
+
