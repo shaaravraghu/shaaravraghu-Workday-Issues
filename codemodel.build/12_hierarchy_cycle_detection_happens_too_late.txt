@@ -1,0 +1,37 @@
+Title: Hierarchy cycles are accepted during graph construction and only fail later during traversal
+Category: Bug / Validation Gap
+Priority: Medium
+Modules: `hierarchical-codemodel`
+Validation: Static analysis
+
+Summary:
+The hierarchical model accepts parent-child edges during construction without validating whether the new edge creates a cycle. Cycles are discovered only later when callers invoke traversal helpers such as `level()` or `getAncestor(...)`.
+
+Evidence:
+- `hierarchical-codemodel/src/main/java/build/codemodel/hierarchical/AbstractHierarchicalCodeModel.java:109-185`
+- `hierarchical-codemodel/src/main/java/build/codemodel/hierarchical/descriptor/HierarchicalTypeDescriptor.java:133-149`
+- `...:215-246`
+
+Observed behavior:
+- Parent links are stored immediately in `children` and `parents`.
+- No validation occurs in `onCreatedParentTypeDescriptor(...)`.
+- Traversal methods later throw `IllegalStateException("Cycle detected in type hierarchy at: ...")`.
+
+Likely impact:
+- Invalid graphs can exist in memory for some time before failing.
+- The eventual exception appears far away from the mutation that introduced the cycle, which makes debugging harder.
+- Callers may only discover corruption when performing unrelated read operations.
+
+Expected behavior:
+Cycle detection should happen when parent traits are applied or when hierarchy edges are registered.
+
+Actual behavior:
+Cycle detection happens lazily, on read.
+
+Suggested confirmation steps:
+1. Create two hierarchical types.
+2. Add parent edges that form a cycle.
+3. Call `level()` or `getAncestor(...)` and observe the late exception.
+
+Suggested fix direction:
+Validate candidate parent edges at insertion time and reject cycle-forming relationships with a targeted exception that identifies both endpoints.
