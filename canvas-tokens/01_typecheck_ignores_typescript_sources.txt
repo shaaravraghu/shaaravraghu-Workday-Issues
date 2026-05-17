@@ -1,0 +1,51 @@
+ISSUE TITLE
+Root typecheck script does not include TypeScript or TSX source files
+
+ISSUE TYPE
+Tooling / CI confidence gap
+
+PRIORITY
+High
+
+SUGGESTED LABELS
+infrastructure, tooling, bug
+
+AFFECTED FILES
+- tsconfig.json:13-16
+- package.json:25
+
+SUMMARY
+The root `typecheck` script suggests that the repository validates TypeScript sources, but the root `tsconfig.json` only includes `packages/**/*.json`. As a result, `tsc -p . --noEmit` can pass without checking the `.ts` and `.tsx` code that powers token generation and documentation.
+
+WHY THIS MATTERS
+- It creates false confidence in CI and local validation.
+- Strict mode settings are effectively not protecting source files.
+- Regressions in utility code or docs components can ship unnoticed until runtime or Storybook build time.
+
+EVIDENCE
+- `tsconfig.json:13-16` contains only:
+  - `include`
+  - `packages/**/*.json`
+- `package.json:25` exposes a repo-wide `typecheck` script:
+  - `tsc -p . --noEmit`
+
+REPRODUCTION
+1. Add an obvious TypeScript error to a file under `packages/**`, such as a bad property access in a `.ts` or `.tsx` file.
+2. Run the root typecheck command.
+3. Observe that the command can still pass because the source file is not part of the configured include set.
+
+EXPECTED RESULT
+The root typecheck command should fail on invalid `.ts` and `.tsx` source files.
+
+ACTUAL RESULT
+The current configuration appears to validate JSON files only, so TypeScript source validation is incomplete.
+
+SUGGESTED FIX DIRECTION
+- Expand the root `include` list to cover `packages/**/*.ts` and `packages/**/*.tsx`, or
+- Introduce project-level tsconfig references and point `typecheck` at those configs instead of the current JSON-only setup.
+
+ACCEPTANCE CRITERIA
+- The root typecheck command fails when a source `.ts` or `.tsx` file contains a real type error.
+- The command still succeeds for the current valid codebase.
+- CI and local docs clearly reflect what is actually being typechecked.
+
