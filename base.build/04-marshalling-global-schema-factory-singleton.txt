@@ -1,0 +1,63 @@
+Title
+`Marshalling.GLOBAL_SCHEMA_FACTORY` is a mutable global singleton that leaks state across callers and tests
+
+Issue type
+Architecture bug
+
+Severity
+Medium
+
+Priority
+P2
+
+Affected modules
+`base-marshalling`
+
+Affected files
+`base-marshalling/src/main/java/build/base/marshalling/Marshalling.java`
+
+Verification status
+Source inspection
+
+Problem summary
+The `Marshalling` interface exposes a process-wide `GLOBAL_SCHEMA_FACTORY` and routes all registration and default marshaller creation through it. That makes schema registration global, shared, and difficult to isolate.
+
+Evidence
+The singleton is declared at line 38.
+All registration methods and `newMarshaller()` delegate to that singleton at lines 51-76 and 84-94.
+
+Relevant references
+`base-marshalling/src/main/java/build/base/marshalling/Marshalling.java:38`
+`base-marshalling/src/main/java/build/base/marshalling/Marshalling.java:51`
+`base-marshalling/src/main/java/build/base/marshalling/Marshalling.java:64`
+`base-marshalling/src/main/java/build/base/marshalling/Marshalling.java:75`
+`base-marshalling/src/main/java/build/base/marshalling/Marshalling.java:84`
+
+Why this matters
+Global mutable registration state complicates test isolation, modular embedding, and multi-tenant use inside the same JVM.
+It also makes behavior depend on registration order and previous callers.
+
+Reproduction steps
+1. Review `Marshalling.java`.
+2. Note that callers cannot create a fresh default schema factory through this API surface.
+3. Observe that any registration mutates shared process-wide state.
+
+Expected result
+Library consumers should be able to create isolated schema factories and marshallers without mutating global state.
+
+Actual result
+The default API path shares one mutable schema factory across all callers in the JVM.
+
+Suggested fix direction
+Keep the global path only as a convenience layer and add a first-class instance-oriented entry point.
+Document the singleton as legacy or convenience behavior if it cannot be removed immediately.
+
+Acceptance criteria
+Callers can obtain an isolated `SchemaFactory` and `Marshaller` without using global mutable state.
+Tests can register schemas without impacting unrelated tests in the same process.
+
+Suggested labels
+`bug`
+`architecture`
+`marshalling`
+`testability`
