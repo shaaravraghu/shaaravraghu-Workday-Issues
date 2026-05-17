@@ -1,0 +1,43 @@
+Title
+StartExecution returns a Terminal for exec sessions but never wires stdin
+
+Type
+Bug
+
+Severity
+High
+
+Modules
+- spawn-docker-jdk
+
+Evidence
+- `spawn-docker-jdk/src/main/java/build/spawn/docker/jdk/command/StartExecution.java:111-128`
+- The code contains `TODO: establish PipedWriter for stdin`.
+- `getInputWriter()` returns `NullWriter.get()` even when `terminalRequired` is true.
+
+Why this matters
+- Docker exec sessions are a common place where callers expect genuine interactivity.
+- Returning a terminal with a no-op writer breaks that expectation and can lead to confusing hangs.
+
+Expected behavior
+- If `terminalRequired` is true, stdin should be usable.
+
+Actual behavior
+- Callers may receive `Optional.of(terminal)`, but that terminal is effectively output-only.
+
+Suggested reproduction
+1. Start an exec session that waits for input.
+2. Request `terminalRequired=true`.
+3. Write to the terminal input writer.
+4. Observe that the exec session never receives the input.
+
+Suggested fix
+- Wire stdin to the Docker exec stream.
+- If the implementation cannot support stdin yet, return `Optional.empty()` or document the limitation explicitly.
+
+Suggested tests
+- Add an integration test for interactive `docker exec` behavior.
+
+Issue body ready to paste
+`StartExecution` can return `Optional.of(terminal)` for exec sessions, but the terminal input side is not implemented. The code still returns `NullWriter`, so `terminalRequired=true` currently produces a read-only terminal rather than a truly interactive exec session.`
+
