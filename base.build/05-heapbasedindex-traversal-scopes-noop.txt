@@ -1,0 +1,62 @@
+Title
+Concrete `HeapBasedIndex` advertises non-indexed query scopes but implements them as empty traversal
+
+Issue type
+Correctness bug
+
+Severity
+High
+
+Priority
+P1
+
+Affected modules
+`base-query`
+
+Affected files
+`base-query/src/main/java/build/base/query/HeapBasedIndex.java`
+`base-query/src/main/java/build/base/query/Scope.java`
+
+Verification status
+Source inspection
+
+Problem summary
+`Scope.Direct`, `Scope.DepthFirst`, and `Scope.BreadthFirst` are public query options, but the concrete `HeapBasedIndex` implementation returns `Iterators.empty()` for both traversal hooks. That means the public class does not actually traverse anything beyond indexed values.
+
+Evidence
+The scope enum exposes `Direct`, `DepthFirst`, and `BreadthFirst`.
+`HeapBasedIndex.traverse(Class<T>, Scope)` returns `Iterators.empty()` at line 45.
+`HeapBasedIndex.traverse(Scope)` returns `Iterators.empty()` at line 50.
+
+Relevant references
+`base-query/src/main/java/build/base/query/HeapBasedIndex.java:43`
+`base-query/src/main/java/build/base/query/HeapBasedIndex.java:49`
+`base-query/src/main/java/build/base/query/Scope.java:33`
+`base-query/src/main/java/build/base/query/Scope.java:39`
+
+Why this matters
+The public API suggests additive traversal behavior for non-indexed scopes, but the default concrete implementation behaves as a no-op.
+That makes scope selection misleading and can hide data that callers expect to be considered.
+
+Reproduction steps
+1. Inspect `Scope`.
+2. Inspect `HeapBasedIndex`.
+3. Observe that all traversal paths return empty iterators regardless of scope or type.
+
+Expected result
+Either the concrete `HeapBasedIndex` should implement direct and transitive traversal semantics, or the unsupported scopes should be rejected explicitly.
+
+Actual result
+The scopes are accepted but silently behave like "no traversal available."
+
+Suggested fix direction
+Implement real traversal for the concrete index, or fail fast for unsupported scopes so the public API cannot silently degrade.
+
+Acceptance criteria
+`HeapBasedIndex` either returns traversed objects for non-indexed scopes or throws a clear unsupported exception for those scopes.
+Tests cover the concrete class rather than only custom subclasses of `AbstractHeapBasedIndex`.
+
+Suggested labels
+`bug`
+`query`
+`api-behavior`
