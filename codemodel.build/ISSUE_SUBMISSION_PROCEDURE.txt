@@ -1,0 +1,73 @@
+Purpose:
+Use this file as the playbook for turning the issue `.txt` files in this folder into GitHub issues.
+
+Context and limits:
+- These reports were produced from static analysis of the repository.
+- Runtime confirmation was not possible in this workspace because no local Java runtime is installed here.
+- Each issue should therefore be framed as "reproduced by code inspection, runtime confirmation pending" unless you validate it locally first.
+
+Workday / community guidelines to follow:
+1. Follow the Code of Conduct and Contributor License Agreement.
+2. Communicate on issues early.
+3. Check whether an issue already exists before opening a new one.
+4. Ask maintainers whether the issue is relevant or already being handled.
+5. If you want to work on a fix, say so on the issue.
+6. Ask questions when details are missing.
+
+Recommended submission flow:
+1. Review `00_ANALYSIS_SUMMARY.txt` and decide which issues are highest value to raise first.
+2. Search the repository's existing issues and pull requests for duplicates using the report title and the key file names.
+3. For each issue you decide to raise, open the matching `.txt` file and copy its sections into the GitHub issue form.
+4. In the issue body, keep the following fields:
+   - Title
+   - Category
+   - Priority
+   - Modules
+   - Summary
+   - Evidence
+   - Expected behavior
+   - Actual behavior
+   - Impact
+   - Suggested confirmation steps
+   - Suggested fix direction
+5. Add one short note near the top:
+   - "This report is based on static analysis. Local runtime validation is still pending because the analysis environment did not have a Java runtime installed."
+6. Ask the maintainers whether they consider the issue:
+   - a confirmed bug
+   - an intended limitation
+   - a design tradeoff
+   - a good first issue
+7. If the maintainers confirm the issue and you want to contribute a fix, comment that you would like to work on it before starting implementation.
+
+Suggested order for raising issues:
+1. Raise the annotation-processing and equality/hashCode issues first.
+2. Raise the JDK initializer consistency issues next.
+3. Raise the DI API ergonomics and hierarchy-validation issues after that.
+
+Suggested GitHub issue opening template:
+Title:
+Paste the `Title` field from the `.txt` file.
+
+Summary:
+Paste the `Summary` field.
+
+Evidence:
+Paste the `Evidence` field.
+
+Expected behavior:
+Paste the `Expected behavior` field.
+
+Actual behavior:
+Paste the `Actual behavior` field.
+
+Impact:
+Paste the `Likely impact` field.
+
+Validation note:
+This report is based on static analysis. Local runtime confirmation is still pending.
+
+Closing guidance:
+- Keep one GitHub issue per `.txt` file.
+- Do not merge multiple unrelated problems into a single issue.
+- If a maintainer says two issues are really one root cause, close one and cross-link it.
+- If you validate an issue locally later, update the GitHub issue with the exact command, fixture, and observed output.
