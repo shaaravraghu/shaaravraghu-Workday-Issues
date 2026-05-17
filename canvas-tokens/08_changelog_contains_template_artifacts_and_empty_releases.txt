@@ -1,0 +1,49 @@
+ISSUE TITLE
+Published changelog contains empty release sections and leftover template text
+
+ISSUE TYPE
+Release documentation bug
+
+PRIORITY
+Medium
+
+SUGGESTED LABELS
+documentation, release, bug
+
+AFFECTED FILES
+- packages/canvas-tokens-web/CHANGELOG.md:3-57
+
+SUMMARY
+The generated changelog currently contains empty release entries (`-`) and a leftover release-note template block in `4.3.0-beta.0`. This makes the published history look unreviewed and lowers trust in the release notes.
+
+WHY THIS MATTERS
+- Consumers rely on the changelog to understand what changed.
+- Empty sections obscure whether a release was intentionally empty or accidentally misgenerated.
+- Template residue makes the changelog look broken.
+
+EVIDENCE
+- `CHANGELOG.md:3-7` shows `4.3.0` with only `-`.
+- `CHANGELOG.md:53-57` shows `4.2.0` with only `-`.
+- `CHANGELOG.md:44-51` includes template guidance text that should not be published.
+
+REPRODUCTION
+1. Open `packages/canvas-tokens-web/CHANGELOG.md`.
+2. Inspect the top release entries.
+3. Observe empty bullets and human-facing template instructions embedded in the file.
+
+EXPECTED RESULT
+Published changelog entries should contain curated release notes only.
+
+ACTUAL RESULT
+The file contains placeholders and template artifacts.
+
+SUGGESTED FIX DIRECTION
+- Clean the existing changelog entries.
+- Audit the release-note generation path so template helper text cannot leak into committed output.
+- Decide whether empty versions should be omitted or annotated intentionally.
+
+ACCEPTANCE CRITERIA
+- No published changelog entry contains placeholder-only bullets.
+- No release note template guidance appears in committed changelog output.
+- The generation flow is documented and tested if automated.
+
