@@ -1,0 +1,49 @@
+Issue Title
+Workspace.close() claims to close resources but only closes plugins
+
+Type
+Bug
+
+Priority
+High
+
+Component
+spin-api
+
+Suggested Labels
+bug, lifecycle, resource-management
+
+Affected Files
+- spin-api/src/main/java/build/spin/Workspace.java
+
+Summary
+`Workspace.close()` is documented and commented as closing both auto-closeable plugins and resources, but the implementation only iterates over `project.plugins(AutoCloseable.class)`. Auto-closeable resources are skipped entirely.
+
+Evidence
+- Method contract says it closes plugins and resources at `Workspace.java:43-45`.
+- The implementation only iterates over plugins at `Workspace.java:59-68`.
+
+Impact
+Resources that hold sockets, file watchers, HTTP transports, caches, or background state can leak across shutdown. This is especially risky in server mode and test scenarios.
+
+Reproduction Inputs
+1. Create or identify a `Resource` implementation that also implements `AutoCloseable`.
+2. Attach it to a workspace or project.
+3. Call `Workspace.close()`.
+4. Confirm that the resource `close()` method is never invoked.
+
+Expected Result
+All auto-closeable workspace resources and plugins should be closed during depth-first shutdown.
+
+Actual Result
+Only auto-closeable plugins are closed.
+
+Suggested Fix Direction
+- Iterate over `project.resources()` as well as `project.plugins()`.
+- Keep shutdown order explicit so resource teardown happens deterministically.
+
+Required Inputs For Filing
+- Severity: High
+- User-facing symptom: leaked project/workspace resources on shutdown
+- Code references: Workspace.java:43-45 and 59-68
+- Regression risk: medium to high for server mode and tests
