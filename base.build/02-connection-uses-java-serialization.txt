@@ -1,0 +1,63 @@
+Title
+Replace Java serialization in `base-network` `Connection` with a transport built on the library's marshalling stack
+
+Issue type
+Security bug
+
+Severity
+High
+
+Priority
+P1
+
+Affected modules
+`base-network`
+
+Affected files
+`base-network/src/main/java/build/base/network/Connection.java`
+
+Verification status
+Source inspection
+
+Problem summary
+`Connection` serializes requests, responses, and publish payloads with `ObjectOutputStream` and deserializes them with `ObjectInputStream`. That creates a Java deserialization surface on a network boundary and bypasses the repository's own `Marshalling` and `Transport` abstractions.
+
+Evidence
+`Connection` uses `ObjectOutputStream` at lines 214-219 and 465-468.
+`Connection` uses `ObjectInputStream` at lines 337-379.
+
+Relevant references
+`base-network/src/main/java/build/base/network/Connection.java:214`
+`base-network/src/main/java/build/base/network/Connection.java:337`
+`base-network/src/main/java/build/base/network/Connection.java:465`
+
+Why this matters
+Deserializing untrusted object graphs is a well-known remote code execution risk when gadget chains are available.
+Even in trusted environments, this approach couples both ends of the connection to identical JVM class definitions and undermines compatibility across versions.
+The repository already has `base-marshalling`, `base-transport`, and `base-transport-json`, so `base-network` is bypassing the project's own serialization story.
+
+Reproduction steps
+1. Review `Connection.createProducer`, `Connection.handleOperation`, and `Connection.serialize`.
+2. Observe that all payload types crossing the socket are handed to JDK object serialization rather than a constrained transport codec.
+3. Note that no class filter, allow-list, or alternate transport is applied before deserialization.
+
+Expected result
+Network transport should use an explicit, schema-driven serialization mechanism with a constrained type system and predictable wire format.
+
+Actual result
+The network layer accepts arbitrary serialized Java object graphs across the socket boundary.
+
+Suggested fix direction
+Introduce a transport-backed protocol for `Connection`, ideally using `Marshaller` plus a binary or JSON transport.
+If migration must be incremental, add an allow-list or `ObjectInputFilter` immediately and deprecate the current Java-serialization path.
+
+Acceptance criteria
+No `ObjectInputStream` or `ObjectOutputStream` usage remains on the request, response, or publish path.
+`Connection` payloads are encoded through a declared transport and marshalling schema.
+Compatibility and error behavior are covered by tests for malformed payloads and version mismatches.
+
+Suggested labels
+`bug`
+`security`
+`network`
+`serialization`
