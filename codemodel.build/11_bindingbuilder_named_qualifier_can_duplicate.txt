@@ -1,0 +1,33 @@
+Title: `AbstractBindingBuilder.as(String)` can add duplicate `@Named` qualifiers to the same binding type
+Category: Bug
+Priority: Medium
+Modules: `dependency-injection`, `codemodel-foundation`
+Validation: Static analysis
+
+Summary:
+`AbstractBindingBuilder.as(String)` creates a new `AnnotationTypeUsage` for `@Named` and adds it directly to the bound `TypeUsage`, but it does not check whether a `Named` trait already exists. The file itself contains a TODO calling this out.
+
+Evidence:
+- `dependency-injection/src/main/java/build/codemodel/injection/AbstractBindingBuilder.java:73-91`
+- TODO at line 86: `ensure the Name annotation isn't already added to the Trait`
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/usage/AnnotationTypeUsage.java:49-51` shows `AnnotationTypeUsage` is a `Trait` without singular registration.
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/descriptor/Traitable.java:215-223` documents that asking for one trait can fail when multiple assignable traits exist.
+
+Likely impact:
+- Repeated `.as(...)` calls can accumulate multiple `@Named` qualifiers.
+- Mixing `.with(...)` and `.as(...)` can also duplicate or conflict with qualifier traits.
+- Later resolution paths that expect a single qualifier may become ambiguous.
+
+Expected behavior:
+Setting a name should replace an existing `@Named` qualifier or reject duplicate configuration clearly.
+
+Actual behavior:
+Each call appends another qualifier trait.
+
+Suggested confirmation steps:
+1. Build a binding and call `.as("a").as("b")`.
+2. Inspect `typeUsage().traits(AnnotationTypeUsage.class)`.
+3. Verify that multiple `Named` traits are present.
+
+Suggested fix direction:
+Remove or replace existing `Named` traits before adding a new one, or make the `Named` trait path singular at the binding API level.
