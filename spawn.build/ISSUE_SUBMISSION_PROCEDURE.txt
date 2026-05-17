@@ -1,0 +1,81 @@
+Purpose
+This file suggests a practical, low-friction procedure for raising the attached issues in a way that fits the contribution guidance you shared.
+
+Recommended procedure
+1. Read `issue-reports/00-ISSUE_INDEX.txt` first and decide the filing order.
+2. Before opening anything new, search the repository issues for duplicate reports or recent discussion on the same code path.
+3. Start with one of the highest-impact issues:
+- `01-composition-clone-returns-empty.txt`
+- `02-composition-relaunch-shuts-down-without-restarting.txt`
+- `09-local-launcher-processbuilder-quoting-breaks-launches.txt`
+- `11-local-jdk-launcher-processbuilder-quoting-breaks-jvm-inputs.txt`
+4. If an issue already exists, comment there instead of opening a duplicate. Use the evidence and reproduction notes from the matching `.txt` file.
+5. If no issue exists, copy the relevant `.txt` file into a new issue and keep the structure:
+- title
+- type
+- severity
+- modules
+- evidence
+- why this matters
+- expected behavior
+- actual behavior
+- suggested reproduction
+- suggested fix
+- suggested tests
+6. Mention that the report came from source analysis and note the validation limit:
+- Maven tests could not be executed in this workspace because no Java runtime was installed locally.
+7. Ask maintainers whether the issue is still relevant and whether anyone is already working on it.
+8. If you want to fix one, comment on the issue that you would like to take it.
+9. If maintainers confirm relevance, prepare a focused PR with one bug family per change set. Good groupings are:
+- composition bugs
+- ProcessBuilder quoting bugs
+- Docker interactive terminal bugs
+- portability bugs
+10. Add or request tests for every runtime behavior change.
+
+How to phrase the issue respectfully
+- Lead with the user-visible problem, not the code criticism.
+- Include exact file and line references.
+- Be explicit about whether the finding is statically confirmed or runtime-confirmed.
+- Ask a clarifying question when intent is uncertain, for example whether an API is intentionally stubbed or accidentally exposed.
+
+Suggested issue template
+Title:
+[short bug summary]
+
+Problem:
+[one paragraph describing the behavior]
+
+Evidence:
+- file:line
+- file:line
+
+Expected:
+[expected behavior]
+
+Actual:
+[actual behavior]
+
+Suggested reproduction:
+1. ...
+2. ...
+3. ...
+
+Suggested fix:
+[brief implementation direction]
+
+Suggested tests:
+- ...
+
+How this aligns with your contribution guidelines
+- Communicate on issues before starting code work.
+- Ask whether the issue is relevant or already in progress.
+- Use these reports as discussion starters, not as final truth if maintainers provide extra context.
+- Keep the conversation collaborative and invite clarification where behavior may have been intentional.
+
+Suggested filing order for maintainers
+- First wave: composition clone/relaunch/null-platform/specification merge bugs
+- Second wave: launcher quoting bugs
+- Third wave: Docker terminal/input bugs
+- Fourth wave: portability and observability bugs
+
