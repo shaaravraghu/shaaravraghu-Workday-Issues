@@ -1,0 +1,43 @@
+Title
+ClassPath and ModulePath quote individual entries, which breaks spaced paths when passed through ProcessBuilder
+
+Type
+Bug
+
+Severity
+High
+
+Modules
+- spawn-jdk
+
+Evidence
+- `spawn-jdk/src/main/java/build/spawn/jdk/option/ClassPath.java:131-135`
+- `spawn-jdk/src/main/java/build/spawn/jdk/option/ModulePath.java:143-148`
+- Both implementations quote each path entry before joining them into a single `-classpath` or `-p` argument string.
+
+Why this matters
+- The resulting classpath/modulepath string is later handed to `ProcessBuilder` as one already-delimited argument.
+- Embedded quotes are not stripped by the OS or JVM in the same way a shell would strip them.
+- A path such as `/tmp/My App/lib.jar` can become `" /tmp/My App/lib.jar "` semantics inside the token and fail lookup.
+
+Expected behavior
+- Join raw path strings with `File.pathSeparator` and let `ProcessBuilder` pass the resulting token unchanged.
+
+Actual behavior
+- Path elements with spaces are individually shell-quoted inside a token that is not shell-parsed.
+
+Suggested reproduction
+1. Construct a `ClassPath` or `ModulePath` with at least one directory containing spaces.
+2. Launch a `JDKApplication` that depends on that path.
+3. Observe class/module resolution failures.
+
+Suggested fix
+- Remove `doubleQuoteIfContainsWhiteSpace(...)` from both `resolve(...)` methods.
+
+Suggested tests
+- Add a regression test for a classpath entry containing spaces.
+- Add a corresponding module-path test.
+
+Issue body ready to paste
+`ClassPath.resolve(...)` and `ModulePath.resolve(...)` shell-quote individual path entries before joining them into a single `-classpath` or `-p` token. Because those tokens are later passed via `ProcessBuilder` rather than a shell, the quotes can remain literal and break lookup for spaced paths.`
+
