@@ -1,0 +1,38 @@
+Title: AnnotationProcessor records `ErrorType` diagnostics but still falls through to `IllegalStateException`
+Category: Bug
+Priority: High
+Modules: `jdk-annotation-processor`
+Validation: Static analysis
+
+Summary:
+When the annotation processor encounters an `ErrorType`, it records an error message but does not resolve the pending lazy placeholder to a fallback `TypeUsage`. The queue later finishes with no resolved entry and throws `IllegalStateException`.
+
+Evidence:
+- `jdk-annotation-processor/src/main/java/build/codemodel/annotation/processing/AnnotationProcessor.java:684-694`
+- `...:840-847`
+
+Observed control flow:
+1. `visitError(...)` calls `recorder.error(...)`.
+2. The lazy slot is left unresolved.
+3. After queue processing, `resolved.get(typeMirror)` is still `null`.
+4. The method throws `IllegalStateException("Failed to resolve the TypeUsage for:" + typeMirror)`.
+
+Likely impact:
+- Users may receive both a diagnostic and an abrupt processor failure.
+- A recoverable missing-type condition can turn into a harder crash that interrupts discovery and makes diagnostics noisier.
+
+Expected behavior:
+Once an error has been recorded, the processor should either:
+- resolve to an explicit fallback such as `UnknownTypeUsage`, or
+- stop cleanly with a controlled, user-facing diagnostic path.
+
+Actual behavior:
+The code both records the issue and later throws an internal exception.
+
+Suggested confirmation steps:
+1. Create a source sample referencing a missing type.
+2. Run annotation processing.
+3. Verify whether the processor emits the diagnostic and then throws.
+
+Suggested fix direction:
+Set the lazy value in `visitError(...)` to a fallback `TypeUsage`, or short-circuit the queue with a controlled failure mode that avoids the follow-up `IllegalStateException`.
