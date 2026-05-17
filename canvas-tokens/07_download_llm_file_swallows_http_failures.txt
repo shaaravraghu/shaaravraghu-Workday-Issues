@@ -1,0 +1,49 @@
+ISSUE TITLE
+`DownloadLLMFile` downloads error pages as `.txt` files and offers no user-visible failure state
+
+ISSUE TYPE
+Docs-site UX bug
+
+PRIORITY
+Medium
+
+SUGGESTED LABELS
+documentation, ux, bug
+
+AFFECTED FILES
+- packages/canvas-tokens-docs/components/DownloadLLMFile/index.tsx:10-28, 37-58
+
+SUMMARY
+The LLM download component fetches the raw file and immediately converts the response body to text without checking `response.ok`. If the URL 404s or returns an HTML error page, the component can still download that error payload as a `.txt` file. On failure, it only logs to the console and does not tell the user what happened.
+
+WHY THIS MATTERS
+- This component is used for migration-helper downloads, where trust in the downloaded file matters.
+- A branch rename, asset move, or transient error can silently produce the wrong artifact.
+- Users have no in-page feedback when the download fails.
+
+EVIDENCE
+- `DownloadLLMFile/index.tsx:12-15` reads the response body without checking `response.ok`.
+- `DownloadLLMFile/index.tsx:26-27` logs failures only to `console.error`.
+- `DownloadLLMFile/index.tsx:37-58` does not expose any error or loading state in the UI.
+
+REPRODUCTION
+1. Point `rawFileLink` at a bad URL or a URL returning non-200 content.
+2. Click "Download LLM File".
+3. Observe that the browser can still download whatever text came back, or fail silently except for a console message.
+
+EXPECTED RESULT
+The component should reject non-OK responses and show a visible error state or message.
+
+ACTUAL RESULT
+The component treats all response bodies as valid downloadable text and hides failures from the user.
+
+SUGGESTED FIX DIRECTION
+- Check `response.ok` before reading the body.
+- Add a lightweight loading/error state to the UI.
+- Consider opening the raw link in a new tab to aid debugging when downloads fail.
+
+ACCEPTANCE CRITERIA
+- 4xx and 5xx responses do not produce misleading downloaded files.
+- Users see clear feedback when a download fails.
+- Happy-path downloads still work for valid raw text assets.
+
