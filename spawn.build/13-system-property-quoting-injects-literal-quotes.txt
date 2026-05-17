@@ -1,0 +1,41 @@
+Title
+SystemProperty.resolve() injects literal quotes into `-D` values that contain spaces
+
+Type
+Bug
+
+Severity
+Medium
+
+Modules
+- spawn-jdk
+
+Evidence
+- `spawn-jdk/src/main/java/build/spawn/jdk/option/SystemProperty.java:91-100`
+- The method appends `Strings.doubleQuoteIfContainsWhiteSpace(value)` directly into the `-Dkey=value` token.
+
+Why this matters
+- The JVM receives the full `-D...` token directly from `ProcessBuilder`.
+- Quoting the value inside that token changes the actual property value instead of only protecting whitespace.
+- Downstream code reading the property can receive unexpected quote characters.
+
+Expected behavior
+- `-Dkey=value with spaces` should be passed as one raw token with no embedded shell quotes.
+
+Actual behavior
+- Values with spaces are converted into `-Dkey="value with spaces"` and the quotes can become part of the property value.
+
+Suggested reproduction
+1. Launch a `JDKApplication` with `SystemProperty.of("example", "hello world")`.
+2. Print `System.getProperty("example")` inside the child JVM.
+3. Observe that the child can receive the quoted form rather than the raw value.
+
+Suggested fix
+- Remove shell-style quoting from `SystemProperty.resolve(...)`.
+
+Suggested tests
+- Add a regression test asserting the child JVM reads `hello world` rather than `"hello world"`.
+
+Issue body ready to paste
+`SystemProperty.resolve(...)` shell-quotes property values before embedding them into the `-Dkey=value` token. Since the JVM receives that token directly from `ProcessBuilder`, the quotes can become part of the actual property value instead of only protecting whitespace.`
+
