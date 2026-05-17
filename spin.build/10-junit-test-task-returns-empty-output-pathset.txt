@@ -1,0 +1,49 @@
+Issue Title
+AbstractTest advertises JUnit report outputs but always returns an empty PathSet
+
+Type
+Bug
+
+Priority
+High
+
+Component
+spin-junit-module
+
+Suggested Labels
+bug, junit, task-outputs, reporting
+
+Affected Files
+- spin-modules/spin-junit-module/src/main/java/build/spin/module/junit/AbstractTest.java
+
+Summary
+The JUnit task documents that it returns the generated report paths, but after running the test launcher it always returns `PathSetBuilder.create().build()`, which is empty.
+
+Evidence
+- Method contract says the return value contains JUnit reports at `AbstractTest.java:84-91`.
+- Reports are written under `reportPath` at `AbstractTest.java:102-103` and passed to the launcher at `AbstractTest.java:235`.
+- The method returns an empty path set at `AbstractTest.java:258`.
+
+Impact
+Downstream tasks cannot reliably consume test report outputs, and callers cannot inspect produced artifacts through the task API.
+
+Reproduction Inputs
+1. Run a JUnit task that generates reports.
+2. Inspect the filesystem under `build/reports/tests`.
+3. Compare that with the returned `PathSet` from the task.
+
+Expected Result
+The returned `PathSet` should include the generated test report directory or its files.
+
+Actual Result
+The reports are generated on disk, but the returned `PathSet` is empty.
+
+Suggested Fix Direction
+- Return the report directory or enumerate generated report files into the `PathSet`.
+- Add a test that asserts the returned `PathSet` matches on-disk outputs.
+
+Required Inputs For Filing
+- Severity: High
+- User-facing symptom: missing task outputs for generated JUnit reports
+- Code references: AbstractTest.java:84-91, 102-103, 235, 258
+- Regression risk: medium
