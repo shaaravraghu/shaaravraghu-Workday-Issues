@@ -1,0 +1,58 @@
+Title
+`Terminal.getOrThrow()` rewrites duplicate-match failures into `NoSuchElementException`
+
+Issue type
+Public API bug
+
+Severity
+Medium
+
+Priority
+P2
+
+Affected modules
+`base-query`
+
+Affected files
+`base-query/src/main/java/build/base/query/Terminal.java`
+
+Verification status
+Source inspection
+
+Problem summary
+`get()` is documented to throw `IllegalStateException` when more than one object matches. `getOrThrow()` catches that condition and rethrows `NoSuchElementException`, which changes the meaning of the failure.
+
+Evidence
+`get()` documents duplicate matches as `IllegalStateException` at lines 96-97.
+`getOrThrow()` catches `IllegalStateException | NoSuchElementException` and throws `NoSuchElementException` at lines 125-128.
+
+Relevant references
+`base-query/src/main/java/build/base/query/Terminal.java:96`
+`base-query/src/main/java/build/base/query/Terminal.java:124`
+
+Why this matters
+Duplicate results and missing results are different error modes.
+Collapsing them into the same exception makes triage and caller recovery logic less reliable.
+
+Reproduction steps
+1. Build a query that returns more than one match.
+2. Call `getOrThrow()`.
+3. Observe that the duplicate-match path is surfaced as `NoSuchElementException`.
+
+Expected result
+`getOrThrow()` should preserve the duplicate-match failure mode or explicitly document that it collapses all non-singleton outcomes into one exception.
+
+Actual result
+Duplicate-result failures are rewritten into the same exception used for empty results.
+
+Suggested fix direction
+Catch only `NoSuchElementException`, or document the method as a "require exactly one or throw NoSuchElementException" convenience with a different name.
+
+Acceptance criteria
+Duplicate-result behavior and documentation are aligned.
+Tests confirm distinct outcomes for zero matches and multiple matches.
+
+Suggested labels
+`bug`
+`query`
+`api-behavior`
