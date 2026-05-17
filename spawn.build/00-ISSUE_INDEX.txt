@@ -1,0 +1,52 @@
+Spawn issue report set
+Generated from in-repo source analysis on 2026-05-17
+
+Scope reviewed
+- spawn-application
+- spawn-application-composition
+- spawn-jdk
+- spawn-local-platform
+- spawn-local-jdk
+- spawn-docker
+- spawn-docker-jdk
+- README.md
+- TODO.md
+- docs/CODEBASE_MAP.md
+
+Validation notes
+- These reports are based on static source analysis and cross-checking code against nearby tests and docs.
+- I attempted to run `./mvnw test -q`, but the local environment had no Java runtime installed, so runtime validation was not possible from this workspace.
+- Where runtime reproduction is suggested, the issue files include concrete scenarios that should be easy to confirm once Java is available.
+
+Issue files included
+1. 01-composition-clone-returns-empty.txt
+2. 02-composition-relaunch-shuts-down-without-restarting.txt
+3. 03-composition-builder-default-platform-is-null.txt
+4. 04-composition-specification-launch-drops-builder-options.txt
+5. 05-composable-with-specification-drops-spec-behavior.txt
+6. 06-docker-session-factory-errors-are-silently-swallowed.txt
+7. 07-docker-attach-terminal-is-read-only.txt
+8. 08-docker-exec-terminal-is-read-only.txt
+9. 09-local-launcher-processbuilder-quoting-breaks-launches.txt
+10. 10-local-jdk-launcher-builds-unix-java-path-on-windows.txt
+11. 11-local-jdk-launcher-processbuilder-quoting-breaks-jvm-inputs.txt
+12. 12-classpath-and-modulepath-quoting-breaks-spaced-paths.txt
+13. 13-system-property-quoting-injects-literal-quotes.txt
+14. 14-local-process-suspend-resume-uses-unix-kill-signals.txt
+
+Suggested filing order
+- Start with the composition issues first. They are high impact and directly contradict public API behavior.
+- Next file the launcher quoting issues because they can break common paths with whitespace.
+- Then file the Docker terminal/input issues and session-factory observability issue.
+- File the portability issues after that.
+
+Suggested labels
+- bug
+- needs-triage
+- composition
+- jdk
+- local-platform
+- docker
+- portability
+- developer-experience
+
