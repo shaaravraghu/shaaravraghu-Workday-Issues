@@ -1,0 +1,36 @@
+Type: Bug Report
+Title: [Bug]: `GraphQLResolver.findOne()` fetches entire collections and filters client-side
+Labels: bug
+
+What happened?
+`GraphQLResolver.findOne()` currently calls `find()` with no server-side ID filter, then searches the returned array locally.
+
+Steps to Reproduce
+1. Open `src/data/GraphQLResolver.ts`.
+2. Locate `findOne()`.
+3. Notice the inline TODO and implementation:
+4. `const all = await this.find<T & { id: string }>(model);`
+5. `return all.find((item) => item.id === id) ?? null;`
+
+What did you expect to happen?
+I expected `findOne()` to issue a targeted query that asks the backend for one record by ID or an equivalent server-side filter.
+
+What actually happened?
+The current implementation fetches the full collection and only then filters in memory.
+
+Screenshots or Logs
+Relevant lines:
+- `src/data/GraphQLResolver.ts:144-148`
+
+Environment Information
+- Node.js version: not executed during this review
+- SDK version: `0.2.2`
+- Operating System: macOS
+- Package manager: npm
+
+Additional Context
+This can create avoidable latency and data-volume issues for large collections, and it risks surprising behavior when callers assume `useModel(id)` is an efficient single-record read path.
+
+How often does this happen?
+Every time
+
