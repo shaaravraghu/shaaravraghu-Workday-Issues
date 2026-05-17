@@ -1,0 +1,43 @@
+Repository: codemodel.build
+Analysis scope: multi-module static analysis across foundation, hierarchical, object-oriented, JDK integration, annotation processing, and dependency-injection layers.
+Validation status: static analysis only in this workspace. `java -version` and `./mvnw -q test` both failed because no local Java runtime is installed here.
+
+What was reviewed:
+- Repository structure from `docs/CODEBASE_MAP.md`
+- Public-facing expectations from `README.md`
+- Hotspots identified via `TODO`, `UnsupportedOperationException`, `IllegalStateException`, and equality/hashCode scans
+- Core files in:
+  - `jdk-annotation-processor`
+  - `jdk-codemodel`
+  - `codemodel-foundation`
+  - `hierarchical-codemodel`
+  - `dependency-injection`
+  - `objectoriented-codemodel`
+
+Issue bundle contents:
+- 12 issue-ready `.txt` files with title, severity, evidence, impact, and suggested confirmation steps
+- 1 procedure file describing how to raise the issues
+
+Issue themes covered:
+1. Annotation processor loses type-use annotations on multiple `TypeMirror` shapes.
+2. Annotation processor error handling records diagnostics but still escalates to `IllegalStateException`.
+3. `JdkInitializer` is inconsistent with the annotation processor for annotations and missing-type diagnostics.
+4. Nested type rendering in `TypeUsages` appears incomplete for enclosing type names.
+5. Multiple descriptor and type-usage classes implement `equals` without `hashCode`.
+6. Dependency-injection binding APIs expose runtime-only unsupported paths and allow duplicate `@Named` qualifiers.
+7. Hierarchy cycle validation happens late, during traversal, rather than when the graph is built.
+
+Files included:
+- `01_annotation_processor_generic_type_use_annotations_lost.txt`
+- `02_annotation_processor_special_type_use_annotations_lost.txt`
+- `03_annotation_processor_error_types_end_in_illegal_state.txt`
+- `04_jdk_initializer_type_variable_annotations_not_attached.txt`
+- `05_jdk_initializer_special_type_annotations_not_attached.txt`
+- `06_jdk_initializer_error_types_silently_downgraded.txt`
+- `07_typeusages_nested_type_rendering_omits_enclosing_type.txt`
+- `08_descriptor_equals_hashcode_contract_incomplete.txt`
+- `09_typeusage_equals_hashcode_contract_incomplete.txt`
+- `10_bindingbuilder_runtime_unsupported_paths.txt`
+- `11_bindingbuilder_named_qualifier_can_duplicate.txt`
+- `12_hierarchy_cycle_detection_happens_too_late.txt`
+- `ISSUE_SUBMISSION_PROCEDURE.txt`
