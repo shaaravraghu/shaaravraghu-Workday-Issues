@@ -1,0 +1,37 @@
+Title: Several descriptor classes override `equals(...)` without implementing `hashCode()`
+Category: Bug
+Priority: High
+Modules: `codemodel-foundation`, `objectoriented-codemodel`
+Validation: Static analysis
+
+Summary:
+Multiple descriptor-layer classes implement structural equality but do not implement a matching `hashCode()`. That violates the standard Java contract for equality-based collection usage.
+
+Evidence:
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/descriptor/AbstractTypeDescriptor.java:105-116`
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/descriptor/AbstractModuleDescriptor.java:106-117`
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/descriptor/AbstractNamespaceDescriptor.java` (same pattern)
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/descriptor/FormalParameterDescriptor.java:155-166`
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/descriptor/ThrowableDescriptor.java` (same pattern)
+- `codemodel-foundation/src/main/java/build/codemodel/foundation/descriptor/AbstractTraitable.java:249-255`
+
+Additional downstream evidence:
+- `objectoriented-codemodel/src/test/java/build/codemodel/objectoriented/descriptor/MarshallingTests.java:341-344` includes a TODO that type-descriptor equality still needs repair.
+
+Likely impact:
+- Broken behavior in `HashSet`, `HashMap`, and caches.
+- Hard-to-reason-about semantics when descriptor objects are deduplicated or compared after marshalling/unmarshalling.
+
+Expected behavior:
+Classes that override `equals(...)` should implement a compatible `hashCode()`.
+
+Actual behavior:
+Equality is structural, but hash code often falls back to object identity.
+
+Suggested confirmation steps:
+1. Create equal descriptor instances with identical logical contents.
+2. Insert them into a `HashSet`.
+3. Verify whether duplicates remain.
+
+Suggested fix direction:
+Implement `hashCode()` consistently at the same abstraction levels where `equals(...)` is defined.
