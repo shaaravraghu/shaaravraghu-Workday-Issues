@@ -1,0 +1,50 @@
+Issue Title
+LanguageServer.main() bypasses dependency injection and can fail before the server starts
+
+Type
+Bug
+
+Priority
+High
+
+Component
+spin-language-server-module
+
+Suggested Labels
+bug, server-mode, language-server, dependency-injection
+
+Affected Files
+- spin-modules/spin-language-server-module/src/main/java/build/spin/module/languageserver/LanguageServer.java
+
+Summary
+The standalone `main()` entry point constructs `LanguageServer` with `new LanguageServer().start()` instead of going through the engine or injection framework. That means injected members such as `TelemetryRecorder` are never initialized, and startup can fail on the first log call.
+
+Evidence
+- `LanguageServer.main()` directly instantiates the class at `LanguageServer.java:56-58`.
+- `TelemetryRecorder recorder` is an injected field at `LanguageServer.java:50-51`.
+- `start()` calls `this.recorder.info(...)` at `LanguageServer.java:67` and `LanguageServer.java:78`.
+
+Impact
+Anyone trying to launch the language server through its standalone entry point can hit a null-backed startup path instead of a working server. This also makes local debugging and tool integration unreliable.
+
+Reproduction Inputs
+1. Build the language-server module or the full repository.
+2. Run the `build.spin.module.languageserver.LanguageServer` main class directly.
+3. Observe startup behavior before any requests are sent.
+
+Expected Result
+The standalone entry point should boot through the same dependency-injected path used by the engine and start the server cleanly.
+
+Actual Result
+The entry point bypasses injection and dereferences injected fields during startup.
+
+Suggested Fix Direction
+- Route `main()` through the engine/bootstrap path.
+- Or remove the standalone `main()` if direct launching is not supported.
+- At minimum, avoid calling injected collaborators before initialization is guaranteed.
+
+Required Inputs For Filing
+- Severity: High
+- User-facing symptom: standalone language-server startup is broken or unreliable
+- Code references: LanguageServer.java:47-58 and 61-89
+- Regression risk: medium, because it affects local tooling and server startup semantics
