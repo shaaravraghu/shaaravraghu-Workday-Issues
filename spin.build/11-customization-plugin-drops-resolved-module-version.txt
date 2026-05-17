@@ -1,0 +1,51 @@
+Issue Title
+CustomizationPlugin resolves a module version but discards it when looking up the artifact
+
+Type
+Bug
+
+Priority
+High
+
+Component
+spin-java-module
+
+Suggested Labels
+bug, dependency-resolution, customization, module-system
+
+Affected Files
+- spin-modules/spin-java-module/src/main/java/build/spin/module/java/CustomizationPlugin.java
+- spin-modules/spin-module-system-module/src/main/java/build/spin/module/modulesystem/ModuleCatalog.java
+
+Summary
+`CustomizationPlugin` computes a fallback module version from `version.properties`, but then builds the `ModuleReference` using only `JDKModuleDescriptor.requiresVersion(requires)`. If the `requires` clause does not declare a version, the later catalog lookup gets an empty version and fails.
+
+Evidence
+- The fallback version is resolved into `moduleVersion` at `CustomizationPlugin.java:214-219`.
+- The `ModuleReference` immediately ignores that resolved value and uses `JDKModuleDescriptor.requiresVersion(requires)` at `CustomizationPlugin.java:221-225`.
+- `ModuleCatalog.getArtifact(...)` returns empty when the reference version is empty at `ModuleCatalog.java:85-93`.
+
+Impact
+External dependency resolution in customization builds can fail even when a valid version exists in `version.properties`.
+
+Reproduction Inputs
+1. Use a dependency whose `requires` clause has no explicit version.
+2. Provide the needed version via `version.properties`.
+3. Trigger the customization dependency resolution path.
+4. Observe the artifact lookup behavior.
+
+Expected Result
+The artifact lookup should use the resolved `moduleVersion`.
+
+Actual Result
+The resolved version is computed, then ignored during catalog lookup.
+
+Suggested Fix Direction
+- Build the `ModuleReference` with `moduleVersion`, not the raw optional from the descriptor.
+- Add a regression test for version resolution through `version.properties`.
+
+Required Inputs For Filing
+- Severity: High
+- User-facing symptom: customization dependency lookup fails despite valid versioning data
+- Code references: CustomizationPlugin.java:214-225 and ModuleCatalog.java:85-93
+- Regression risk: medium
