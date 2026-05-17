@@ -1,0 +1,44 @@
+Title
+Composable.with(Specification) only copies options and drops Specification behavior
+
+Type
+Bug
+
+Severity
+Medium
+
+Modules
+- spawn-application-composition
+
+Evidence
+- `spawn-application-composition/src/main/java/build/spawn/application/composition/Composition.java:911-914`
+- `with(final Specification<A> specification)` only calls `this.options.include(specification.options())`.
+- It never stores the specification object itself.
+
+Why this matters
+- A `Specification` contains more than raw options.
+- It can override `isSupported(...)` and `onLaunching(...)`.
+- Copying only the options discards that behavior while keeping an API surface that implies the full specification is being used.
+
+Expected behavior
+- Passing a `Specification` to `with(...)` should preserve the specification semantics or reject the call clearly if only raw options are supported.
+
+Actual behavior
+- Only option values are merged.
+- Any custom `Specification` logic is silently lost.
+
+Suggested reproduction
+1. Create a custom `Specification` with a meaningful `onLaunching(...)` or `isSupported(...)` override.
+2. Add a composable and call `.with(customSpecification)`.
+3. Build the composition.
+4. Observe that only the option values are used and the custom specification logic never runs.
+
+Suggested fix
+- Either store the specification in the plan and merge behavior intentionally, or rename/remove the API so it does not imply full specification support.
+
+Suggested tests
+- Add a regression test using a custom specification with an observable `onLaunching(...)` side effect.
+
+Issue body ready to paste
+`Composable.with(Specification)` currently behaves like `with(specification.options())` rather than using the specification itself. That silently drops `Specification` behavior such as `isSupported(...)` and `onLaunching(...)`, which makes the API misleading and can cause launch customization to be skipped without warning.`
+
