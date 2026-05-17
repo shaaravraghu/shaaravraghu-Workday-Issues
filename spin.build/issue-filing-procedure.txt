@@ -1,0 +1,53 @@
+Purpose
+- Use this procedure to raise the issues from this folder in a way that matches the contribution guidance you shared.
+
+Before filing
+1. Follow the Workday Code of Conduct and confirm the repository or tracker requires the Contributor License Agreement for the kind of contribution you plan to make.
+2. Search existing issues for the same class name, task name, or symptom to avoid duplicates.
+3. Prefer starting with the highest-priority files from analysis-summary.txt.
+
+How to choose an issue
+1. Open one of the numbered `.txt` files in this folder.
+2. Review the title, evidence, reproduction inputs, expected result, and actual result.
+3. If the issue is still relevant, use the file as the source of truth for the issue body.
+
+How to communicate on issues
+1. Create or identify an issue to work on.
+2. If you are a new contributor, call out that you are starting with a scoped issue from this prepared list.
+3. Ask the maintainers whether the issue is still relevant or already claimed.
+4. State clearly if you would like to work on it.
+5. Ask questions early if the implementation path is unclear.
+
+Recommended issue format
+- Title: copy the "Issue Title" field from the `.txt` file.
+- Summary: copy the "Summary" field.
+- Evidence: include the listed file paths and line references.
+- Reproduction: include the numbered "Reproduction Inputs" section.
+- Expected behavior: copy the section exactly or paraphrase lightly.
+- Actual behavior: copy the section exactly or paraphrase lightly.
+- Impact: keep the impact section concise and user-focused.
+- Suggested labels: use the provided labels if the tracker supports them.
+
+Recommended filing steps
+1. Copy the "Issue Title".
+2. Paste the "Summary" and "Impact" near the top of the issue.
+3. Add the "Evidence" section with file references.
+4. Add the "Reproduction Inputs" section.
+5. Add "Expected Result" and "Actual Result".
+6. Add the "Suggested Fix Direction" as a non-binding proposal.
+7. Add the "Suggested Labels" if your tracker supports labels.
+
+When to ask for maintainer feedback before coding
+- The issue touches lifecycle or shutdown behavior.
+- The issue changes public behavior in server mode.
+- The issue affects Maven packaging or artifact resolution.
+- The issue is UI or developer-experience oriented and needs product or design direction.
+
+If the contribution is UI-based
+- Consult a designer or ask a maintainer for design help before implementation, per the guidance you shared.
+
+Suggested tracker comment when claiming work
+- "I reviewed the prepared issue report and would like to work on this if it is still available. Please let me know if there is prior context or an expected implementation direction."
+
+Suggested tracker comment when only reporting
+- "I reviewed the current source and attached code references, reproduction inputs, and expected vs actual behavior below so the issue is ready for triage."
