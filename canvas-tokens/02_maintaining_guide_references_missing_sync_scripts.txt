@@ -1,0 +1,57 @@
+ISSUE TITLE
+Maintainer guide points to missing `tokens-config` scripts and a missing `.env.example`
+
+ISSUE TYPE
+Documentation / contributor workflow bug
+
+PRIORITY
+High
+
+SUGGESTED LABELS
+documentation, contributor-experience, bug
+
+AFFECTED FILES
+- MAINTAINING.md:75-116
+- package.json:13-28
+
+SUMMARY
+`MAINTAINING.md` instructs maintainers to copy `.env.example` and run multiple `yarn tokens-config ...` commands, but the current repository does not expose those scripts in the root `package.json`, and a local file scan did not find `.env.example`. The guide also contains a typo: `yarn yarn tokens-config create-pull prerelease/major`.
+
+WHY THIS MATTERS
+- New maintainers hit dead ends immediately when following the official guide.
+- It increases the chance of ad hoc, inconsistent sync workflows.
+- It undermines trust in the rest of the maintainer documentation.
+
+EVIDENCE
+- `MAINTAINING.md:75-80` references `.env.example`.
+- `MAINTAINING.md:87-116` references:
+  - `yarn tokens-config sync`
+  - `yarn tokens-config sync base`
+  - `yarn tokens-config create-pull`
+  - `yarn yarn tokens-config create-pull prerelease/major`
+- `package.json:13-28` does not define any `tokens-config` script.
+- A repository file scan did not locate `.env.example`.
+
+REPRODUCTION
+1. Follow `MAINTAINING.md` exactly from the "Getting A Key" section onward.
+2. Try to copy `.env.example`.
+3. Try to run the documented `yarn tokens-config ...` commands.
+4. Observe that the documented assets/commands are not available in the current workspace.
+
+EXPECTED RESULT
+The maintainer guide should only document commands and files that exist in the repo, or it should clearly document the external setup required.
+
+ACTUAL RESULT
+The guide currently points to commands and files that appear to be missing from the current repo state.
+
+SUGGESTED FIX DIRECTION
+- Remove or rewrite stale sync instructions.
+- Add the missing scripts/files back if they are still intended to be supported.
+- Fix the duplicated `yarn` typo.
+- Consider linking directly to the currently supported sync workflow if it now lives elsewhere.
+
+ACCEPTANCE CRITERIA
+- Every documented maintainer command exists and can be discovered from the repo.
+- Every documented required file exists or is replaced with accurate setup steps.
+- The sync section is validated end-to-end by someone starting from a fresh clone.
+
