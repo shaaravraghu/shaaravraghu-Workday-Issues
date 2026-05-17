@@ -1,0 +1,49 @@
+Issue Title
+Maven source and javadoc packaging swallow IO errors and can produce partial artifacts
+
+Type
+Bug
+
+Priority
+Medium
+
+Component
+spin-maven-module
+
+Suggested Labels
+bug, maven, packaging, artifact-integrity
+
+Affected Files
+- spin-modules/spin-maven-module/src/main/java/build/spin/module/maven/MavenPlugin.java
+
+Summary
+The Maven packaging tasks for sources and javadocs catch `IOException`, print a stack trace, and continue building the archive. That can silently publish incomplete artifacts instead of failing the build.
+
+Evidence
+- Source packaging catches and suppresses add failures at `MavenPlugin.java:313-319`.
+- Javadoc packaging catches and suppresses add failures at `MavenPlugin.java:386-390`.
+
+Impact
+Published `-sources.jar` or `-javadoc.jar` artifacts can be incomplete while the build still looks successful. That is especially risky for CI and repository publishing.
+
+Reproduction Inputs
+1. Force an `IOException` while adding a source path or javadoc path to the archive builder.
+2. Run the relevant Maven packaging task.
+3. Inspect the produced artifact contents and build result.
+
+Expected Result
+Packaging should fail with a clear error when an archive input cannot be added.
+
+Actual Result
+The code prints a stack trace and continues, allowing a partial artifact to be created.
+
+Suggested Fix Direction
+- Replace `printStackTrace()` branches with a runtime failure or checked propagation.
+- Include the failing path in the exception message.
+- Add packaging tests that verify the build fails on archive input errors.
+
+Required Inputs For Filing
+- Severity: Medium
+- User-facing symptom: incomplete published source or javadoc artifacts
+- Code references: MavenPlugin.java:313-319 and 386-390
+- Regression risk: medium
