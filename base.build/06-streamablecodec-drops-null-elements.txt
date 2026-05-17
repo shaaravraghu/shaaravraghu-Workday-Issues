@@ -1,0 +1,59 @@
+Title
+`StreamableCodec` silently drops `null` elements during JSON encoding
+
+Issue type
+Data-loss bug
+
+Severity
+Medium
+
+Priority
+P2
+
+Affected modules
+`base-transport-json`
+
+Affected files
+`base-transport-json/src/main/java/build/base/transport/json/codec/StreamableCodec.java`
+
+Verification status
+Source inspection
+
+Problem summary
+When encoding a `Streamable<T>`, the codec skips `null` elements instead of preserving them or rejecting them. The decoded value therefore has fewer elements than the original.
+
+Evidence
+The encoder iterates elements at lines 72-75 and only writes elements when `element != null`.
+The decoder reconstructs the stream from the encoded array at lines 95-98, so omitted `null` entries cannot be restored.
+
+Relevant references
+`base-transport-json/src/main/java/build/base/transport/json/codec/StreamableCodec.java:72`
+`base-transport-json/src/main/java/build/base/transport/json/codec/StreamableCodec.java:95`
+
+Why this matters
+This is a lossy round-trip for collections that intentionally contain `null`.
+Silent loss is harder to detect than a fail-fast validation error.
+
+Reproduction steps
+1. Create a marshalled type with a `Streamable<String>` field containing `["a", null, "b"]`.
+2. Encode it through `JsonTransport`.
+3. Decode it and compare element count and positions.
+
+Expected result
+The codec should either preserve `null` elements explicitly or reject them with a clear error.
+
+Actual result
+`null` elements are silently omitted from the output JSON array and disappear on decode.
+
+Suggested fix direction
+Encode `null` elements as `JsonNull`, or document and enforce a non-null-element contract with validation.
+
+Acceptance criteria
+Round-trip behavior for `Streamable` with `null` elements is deterministic and covered by tests.
+The codec no longer silently changes collection cardinality.
+
+Suggested labels
+`bug`
+`data-loss`
+`transport`
+`json`
