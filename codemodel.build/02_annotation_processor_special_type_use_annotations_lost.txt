@@ -1,0 +1,44 @@
+Title: AnnotationProcessor does not preserve type-use annotations for type variables, wildcards, union/intersection, void, and unknown usages
+Category: Bug
+Priority: High
+Modules: `jdk-annotation-processor`, `codemodel-foundation`
+Validation: Static analysis
+
+Summary:
+Several `TypeMirror` visitor branches in `AnnotationProcessor.resolveTypeUsage(...)` construct `TypeUsage` objects without attaching the pre-collected annotation traits. The code explicitly documents the gap with repeated TODO comments.
+
+Evidence:
+- `jdk-annotation-processor/src/main/java/build/codemodel/annotation/processing/AnnotationProcessor.java:743-748`
+- `...:753-760`
+- `...:771-778`
+- `...:781-788`
+- `...:791-811`
+- `...:814-834`
+
+Affected branches:
+- `visitTypeVariable`
+- `visitWildcard`
+- `visitNoType`
+- `visitUnknown`
+- `visitUnion`
+- `visitIntersection`
+
+Likely impact:
+- Annotated type variables such as `@A T`
+- Annotated wildcards such as `List<@A ?>`
+- Annotated intersection/union types
+- Special forms modeled as `void` or `unknown`
+can all lose semantic metadata during annotation processing.
+
+Expected behavior:
+Every visitor branch that constructs a `TypeUsage` should apply the annotations already collected for the current `TypeMirror`.
+
+Actual behavior:
+These branches return a `TypeUsage` with no annotation traits added.
+
+Suggested confirmation steps:
+1. Add annotation-processor tests that cover annotated type variables, wildcards, and intersection/union types.
+2. Assert the resulting `TypeUsage` includes the expected `AnnotationTypeUsage` traits.
+
+Suggested fix direction:
+Apply `annotations.get(pendingTypeMirror).forEach(usage::addTrait)` consistently in each branch after constructing the usage object.
