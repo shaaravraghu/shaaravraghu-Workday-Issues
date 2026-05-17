@@ -1,0 +1,34 @@
+Type: Feature Request
+Title: [Feature]: Pin third-party GitHub Actions to commit SHAs across all workflows
+Labels: enhancement
+
+What would you like to see?
+Update every third-party action reference in `.github/workflows/*.yaml` from floating tags or version strings to immutable commit SHAs.
+
+What problem does this solve?
+The repo policy calls for pinning third-party actions to SHAs, but current workflows still use moving references such as `actions/checkout@v6`, `actions/setup-node@v6.4.0`, and `extractions/setup-just@v4`. That leaves room for unexpected upstream changes to affect CI and release behavior.
+
+How would you use this feature?
+1. Keep the same workflows and action choices.
+2. Replace the version-based `uses:` values with the corresponding commit SHAs.
+3. Continue updating SHAs intentionally during dependency maintenance.
+
+How do you imagine this working?
+Each workflow should pin actions to specific commits, with comments or release notes preserved in the PR description if maintainers want human-readable version context.
+
+Have you tried any workarounds?
+No code workaround is needed; this is a workflow hardening change.
+
+Examples or References
+Current references appear in:
+- `.github/workflows/preflight.yaml:15-24`
+- `.github/workflows/test.yaml:15-24`
+- `.github/workflows/release.yaml:17-27`
+- `.github/workflows/publish.yaml:18-30`
+
+How important is this to you?
+Important - would improve my workflow significantly
+
+Additional Context
+This draft aligns with the repository guidance in `AGENTS.md` that specifically says third-party GitHub Actions should be pinned to commit SHAs.
+
