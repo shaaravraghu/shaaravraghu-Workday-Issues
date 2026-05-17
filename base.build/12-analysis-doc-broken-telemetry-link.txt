@@ -1,0 +1,54 @@
+Title
+`docs/analysis.md` links to `docs/telemetry-bugs.md`, but that document is missing
+
+Issue type
+Documentation bug
+
+Severity
+Low
+
+Priority
+P3
+
+Affected modules
+Repository docs
+
+Affected files
+`docs/analysis.md`
+
+Verification status
+Source inspection
+
+Problem summary
+The roadmap in `docs/analysis.md` points readers to `docs/telemetry-bugs.md`, but that file is not present in the repository.
+
+Evidence
+The link appears at line 240 of `docs/analysis.md`.
+The current `docs/` directory only contains `CODEBASE_MAP.md`, `analysis.md`, and `readme-template.md`.
+
+Relevant references
+`docs/analysis.md:240`
+
+Why this matters
+Broken documentation links slow down triage and make it harder for contributors to find the supporting analysis promised by the roadmap.
+
+Reproduction steps
+1. Open `docs/analysis.md`.
+2. Follow the `docs/telemetry-bugs.md` reference.
+3. Observe that the target file does not exist in `docs/`.
+
+Expected result
+The referenced telemetry bug document should exist, or the roadmap should link to the correct file.
+
+Actual result
+The linked document is missing.
+
+Suggested fix direction
+Either add the missing telemetry bug document or replace the link with an existing source of truth.
+
+Acceptance criteria
+All links in `docs/analysis.md` resolve to existing files.
+
+Suggested labels
+`documentation`
+`broken-link`
