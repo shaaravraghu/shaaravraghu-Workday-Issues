@@ -1,0 +1,52 @@
+Issue Title
+WorkspaceConsole exposes a placeholder GraphQL schema with no real workspace data
+
+Type
+Feature gap / missing implementation
+
+Priority
+Medium
+
+Component
+spin-console-module
+
+Suggested Labels
+enhancement, graphql, console, workspace-inspection
+
+Affected Files
+- spin-modules/spin-console-module/src/main/java/build/spin/module/console/WorkspaceConsole.java
+- spin-modules/spin-console-module/src/main/resources/schema.graphqls
+- docs/CODEBASE_MAP.md
+
+Summary
+The console module advertises a GraphQL workspace inspector, but the schema only contains `hello: String`, and the runtime only wires a `"world"` fetcher. There is no actual workspace introspection surface yet.
+
+Evidence
+- `schema.graphqls` only defines `Query.hello` at `schema.graphqls:1-6`.
+- `WorkspaceConsole` only binds `fetcher("Query", "hello", env -> "world")` at `WorkspaceConsole.java:97-99`.
+- The architecture document explicitly describes the schema as a stub at `docs/CODEBASE_MAP.md:543`.
+
+Impact
+Users starting the console can believe they are getting a workspace inspection API, but they only receive a placeholder endpoint. That makes the module hard to rely on and hard to evaluate.
+
+Reproduction Inputs
+1. Start server mode with the console module active.
+2. Open the GraphiQL UI.
+3. Inspect the schema or run a query.
+
+Expected Result
+The console should expose meaningful workspace, project, task, or resource data.
+
+Actual Result
+Only a hello-world-style placeholder query is available.
+
+Suggested Fix Direction
+- Define a first minimal workspace schema.
+- Expose workspace name, path, project tree, detected plugins, and available tasks.
+- Add a schema-level integration test.
+
+Required Inputs For Filing
+- Severity: Medium
+- User-facing symptom: advertised workspace inspector is only a stub
+- Code references: WorkspaceConsole.java:97-99, schema.graphqls:1-6, docs/CODEBASE_MAP.md:543
+- Regression risk: low to medium
