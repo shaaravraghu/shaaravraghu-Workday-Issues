@@ -1,0 +1,45 @@
+Title
+Composition.Builder defaults the platform to null and can fail at build time when using(...) is omitted
+
+Type
+Bug
+
+Severity
+High
+
+Modules
+- spawn-application-composition
+
+Evidence
+- `spawn-application-composition/src/main/java/build/spawn/application/composition/Composition.java:624-626`
+- The builder constructor sets `this.platform = null`.
+- `Composition.java:775-782` later selects `this.platform` when no per-composable platform is set and immediately calls `platform.launch(...)`.
+
+Why this matters
+- The builder API reads like a normal fluent builder, but there is no guard rail that forces `using(...)`.
+- Forgetting one builder step causes a null platform to survive all the way to launch time.
+
+Expected behavior
+- Either a sensible default platform should be used, or `build()` should fail fast with a clear validation error before launch begins.
+
+Actual behavior
+- The builder can proceed with a null platform until `platform.launch(...)` is invoked.
+- The failure mode is a null dereference instead of an actionable message.
+
+Suggested reproduction
+1. Create `Composition.Builder.create()`.
+2. Add a composable but do not call `using(...)`.
+3. Call `build()`.
+4. Observe the failure caused by a null platform reference.
+
+Suggested fix
+- Default to `LocalMachine.get()` if that remains the intended baseline.
+- Otherwise validate in `build()` that every composable resolves to a non-null platform and throw a descriptive exception.
+
+Suggested tests
+- Add a test covering builder usage without `using(...)`.
+- Add a validation test asserting the thrown message mentions the missing platform explicitly.
+
+Issue body ready to paste
+`Composition.Builder` initializes `platform` to `null` and later uses it directly during build when a composable does not define its own platform. If a caller forgets `using(...)`, the failure is deferred until launch time and surfaces as a null-platform crash instead of a clear validation error.`
+
