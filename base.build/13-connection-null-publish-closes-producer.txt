@@ -1,0 +1,63 @@
+Title
+`Connection` uses `null` as a publish-stream shutdown sentinel and makes `null` payloads impossible
+
+Issue type
+Public API bug
+
+Severity
+Medium
+
+Priority
+P2
+
+Affected modules
+`base-network`
+
+Affected files
+`base-network/src/main/java/build/base/network/Connection.java`
+`base-flow/src/main/java/build/base/flow/Producer.java`
+
+Verification status
+Source inspection
+
+Problem summary
+The publish path treats `null` as an internal control signal meaning "producer closed." Because of that, callers cannot publish a legitimate `null` payload even though `Producer.publish(T item)` does not document `null` as invalid.
+
+Evidence
+`publish` marks the producer non-operational and removes it when `item == null` at lines 197-202.
+`Producer.close()` delegates to `publish(null)` at lines 237-240.
+The receiving side treats `item == null` as stream completion at lines 387-390.
+
+Relevant references
+`base-network/src/main/java/build/base/network/Connection.java:197`
+`base-network/src/main/java/build/base/network/Connection.java:238`
+`base-network/src/main/java/build/base/network/Connection.java:387`
+`base-flow/src/main/java/build/base/flow/Producer.java:35`
+
+Why this matters
+The transport conflates control signals with data.
+That makes the wire contract surprising and can silently terminate a publish stream when a caller sends `null`.
+
+Reproduction steps
+1. Create a producer through `Connection.createProducer`.
+2. Call `publish(null)`.
+3. Observe from the code path that the producer is removed locally and the subscriber registry completes remotely.
+
+Expected result
+If `null` payloads are invalid, the API should reject them explicitly.
+If `null` payloads are valid, shutdown should use a distinct control frame rather than overloading payload data.
+
+Actual result
+`null` is silently interpreted as "close the producer."
+
+Suggested fix direction
+Use a dedicated operation or frame for producer completion, or reject `null` with a clear exception at the API boundary.
+
+Acceptance criteria
+Publish stream shutdown is represented separately from payload data.
+`Producer.publish` null-handling is documented and tested.
+
+Suggested labels
+`bug`
+`network`
+`api-behavior`
