@@ -1,0 +1,38 @@
+Type: Bug Report
+Title: [Bug]: `cli/package.json` metadata is out of sync with the published package version and license
+Labels: bug
+
+What happened?
+The root package is version `0.2.2` and licensed `Apache-2.0`, but the shipped `cli/package.json` still says version `0.1.0` and `UNLICENSED`.
+
+Steps to Reproduce
+1. Open the root `package.json`.
+2. Open `cli/package.json`.
+3. Compare version and license values.
+4. Notice that the root package explicitly publishes `cli/package.json` in its `files` list.
+
+What did you expect to happen?
+I expected published metadata included in the package tarball to reflect the current package version and license posture.
+
+What actually happened?
+The nested CLI metadata is stale and conflicts with the root package metadata.
+
+Screenshots or Logs
+Relevant lines:
+- `package.json:3`
+- `package.json:9`
+- `package.json:38-44`
+- `cli/package.json:4-6`
+
+Environment Information
+- Node.js version: not executed during this review
+- SDK version: `0.2.2`
+- Operating System: macOS
+- Package manager: npm
+
+Additional Context
+This may confuse downstream tooling, artifact inspection, or compliance review because the published package includes `cli/package.json` as part of the distribution.
+
+How often does this happen?
+Every time
+
