@@ -1,0 +1,36 @@
+Type: Bug Report
+Title: [Bug]: `everywhere unpublish` does not URL-encode scoped package names
+Labels: bug
+
+What happened?
+`deleteFromRegistry()` interpolates `appId` directly into the path `/api/v1/app/${appId}`. Scoped package names such as `@scope/plugin` contain a slash, so the generated URL path is ambiguous and likely incorrect.
+
+Steps to Reproduce
+1. Create a plugin whose `package.json` name is scoped, for example `@team/my-plugin`.
+2. Run `everywhere unpublish`.
+3. Observe the registry request path generated from the package name.
+
+What did you expect to happen?
+I expected the plugin identifier to be URL-encoded before being inserted into the registry DELETE path.
+
+What actually happened?
+The code passes the raw package name into the URL string, which can split scoped names into extra path segments.
+
+Screenshots or Logs
+Relevant lines:
+- `cli/src/registry/registry.ts:55-60`
+- `cli/src/commands/everywhere/unpublish.ts:35-41`
+- `cli/tests/build/slug.test.ts` and `cli/tests/init-template.test.ts` show the repo already acknowledges scoped package names elsewhere
+
+Environment Information
+- Node.js version: not executed during this review
+- SDK version: `0.2.2`
+- Operating System: macOS
+- Package manager: npm
+
+Additional Context
+This looks especially important because scoped package names are already treated as valid in other parts of the CLI.
+
+How often does this happen?
+Every time
+
