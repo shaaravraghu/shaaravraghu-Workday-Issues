@@ -1,0 +1,38 @@
+Type: Bug Report
+Title: [Bug]: `GraphQLResolver` drops `SINGLE_INSTANCE` and `MULTI_INSTANCE` fields from selections
+Labels: bug
+
+What happened?
+The generated model types and README say reference fields are part of the generated data model, but `GraphQLResolver.selectionSetFor()` only includes scalar field types and excludes `SINGLE_INSTANCE` and `MULTI_INSTANCE`.
+
+Steps to Reproduce
+1. Open `src/data/GraphQLResolver.ts`.
+2. Inspect `SCALAR_TYPES` and `selectionSetFor()`.
+3. Notice that only `TEXT`, `BOOLEAN`, `DATE`, `CURRENCY`, `DECIMAL`, and `NUMERIC` are selected.
+4. Compare that with the generated model types and README, which describe `SINGLE_INSTANCE` and `MULTI_INSTANCE` fields as part of the generated contract.
+
+What did you expect to happen?
+I expected reference fields to be queried in some supported form so the runtime data matches the generated model surface and documentation.
+
+What actually happened?
+Reference fields are omitted from the GraphQL selection set entirely, so consumers cannot reliably receive those values even though the generated types and docs imply they should.
+
+Screenshots or Logs
+Relevant lines:
+- `src/data/GraphQLResolver.ts:31`
+- `src/data/GraphQLResolver.ts:67-75`
+- `cli/src/codegen/generator.ts:27-35`
+- `README.md:118-119`
+
+Environment Information
+- Node.js version: not executed during this review
+- SDK version: `0.2.2`
+- Operating System: macOS
+- Package manager: npm
+
+Additional Context
+This looks like a contract mismatch between the generator, the docs, and the resolver implementation. It may be better to either support reference field selection or narrow the documented/generated types until that support exists.
+
+How often does this happen?
+Every time
+
