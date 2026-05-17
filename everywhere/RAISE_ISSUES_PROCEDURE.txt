@@ -1,0 +1,62 @@
+Procedure for raising these issues in GitHub
+
+Purpose
+This folder contains prewritten issue drafts based on a static review of the repository. Each draft is formatted so it can be copied into the existing GitHub issue templates with minimal editing.
+
+Before filing
+1. Read the relevant draft in `issue-drafts/`.
+2. Confirm the issue is still current on the latest default branch.
+3. Search existing GitHub issues to avoid duplicates.
+4. If a similar issue exists, add supporting evidence there instead of opening a new one.
+
+Recommended filing order
+1. File the runtime/data issues first:
+   `04-bug-graphqlresolver-findone-fetches-entire-collection.txt`
+   `05-bug-graphqlresolver-omits-reference-fields.txt`
+2. Then file the CLI/security issues:
+   `06-bug-auth-login-echoes-access-token.txt`
+   `07-bug-unpublish-breaks-for-scoped-package-names.txt`
+   `08-bug-install-command-overwrites-versioned-archives.txt`
+3. Then file workflow and CI hardening items:
+   `01-feature-pin-github-actions-to-commit-shas.txt`
+   `02-feature-restrict-release-workflow-permissions.txt`
+   `03-bug-cli-source-not-linted-in-preflight.txt`
+4. Finish with doc and template cleanup:
+   `09` through `14`
+
+How to file each issue
+1. Open the repository Issues page.
+2. Choose `Bug Report` for files named `bug-...` and `Feature Request` for files named `feature-...`.
+3. Copy the matching draft into the GitHub form.
+4. Preserve the title prefix exactly:
+   `[Bug]: ...`
+   `[Feature]: ...`
+5. Copy the evidence references exactly so maintainers can jump to the relevant files and lines.
+6. Add screenshots, terminal output, or reproduction results if you verify the issue locally afterward.
+
+Suggested triage etiquette
+1. Communicate on existing issues before starting major work.
+2. If you plan to fix one, comment that you would like to work on it.
+3. Ask maintainers whether the issue is still relevant or already assigned.
+4. If a draft is mostly documentation-only, mention that it appears low-risk and suitable for a quick first contribution.
+
+Code of conduct and contribution notes
+1. Follow the repo's Code of Conduct and normal community expectations.
+2. Keep issue descriptions factual, reproducible, and narrowly scoped.
+3. Avoid combining unrelated problems into one issue unless the files clearly point to the same root cause.
+4. Do not include secrets, private links, or internal tenant information in bug reports.
+
+Recommended metadata to add manually when filing
+1. Labels:
+   `bug` for drafts 03 through 14
+   `enhancement` for drafts 01 and 02
+2. Priority wording:
+   high for drafts 04, 05, 06, and 07
+   medium for drafts 01, 02, 03, 08, 13, and 14
+   low to medium for drafts 09, 10, 11, and 12
+
+After filing
+1. Link related issues together when appropriate.
+2. If you open multiple issues in one batch, post a short coordination comment summarizing the set.
+3. If maintainers ask for consolidation, merge overlapping doc issues into a single follow-up ticket.
+
