@@ -1,0 +1,42 @@
+Title
+LocalProcess.suspend() and resume() depend on Unix `kill -STOP/-CONT` and are not portable
+
+Type
+Bug
+
+Severity
+Medium
+
+Modules
+- spawn-local-platform
+
+Evidence
+- `spawn-local-platform/src/main/java/build/spawn/platform/local/LocalProcess.java:123-133`
+- Suspend is implemented as `machine.launch("kill", "-STOP", pid)`.
+- Resume is implemented as `machine.launch("kill", "-CONT", pid)`.
+
+Why this matters
+- The local platform abstraction otherwise looks cross-platform.
+- These commands are Unix-specific and will not work on Windows.
+- The API surface does not document the limitation.
+
+Expected behavior
+- Either the operation should be implemented in a platform-aware way or clearly reported as unsupported on platforms that do not provide equivalent signaling.
+
+Actual behavior
+- Suspend/resume assumes the presence of a Unix `kill` command and POSIX signals.
+
+Suggested reproduction
+1. Launch a local process on Windows.
+2. Call `suspend()` or `resume()`.
+3. Observe failure due to the missing command or unsupported signal semantics.
+
+Suggested fix
+- Detect the operating system and either provide a supported implementation per platform or fail with a clear unsupported-operation exception.
+
+Suggested tests
+- Add OS-specific tests or explicit assumptions documenting the supported platforms.
+
+Issue body ready to paste
+`LocalProcess.suspend()` and `resume()` shell out to `kill -STOP` and `kill -CONT`. That is Unix-specific behavior and is not portable to Windows, even though the rest of the local-platform API does not clearly signal that suspend/resume are POSIX-only.`
+
